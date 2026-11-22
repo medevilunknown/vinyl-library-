@@ -1,0 +1,12 @@
+{
+  "name": "digital-vinyl-store",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo": "node main.js",
+    "api": "node server.js",
+    "vinyl": "node vinyl.js",
+    "test": "node --test"
+  }
+}
