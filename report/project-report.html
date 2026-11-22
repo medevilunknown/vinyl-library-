@@ -37,7 +37,7 @@ body {
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   padding-block: 40px 64px;
 }
-.wrap { max-width: 900px; margin: 0 auto; display: grid; gap: 28px; }
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 28px; }
 section, header.cover {
   background: var(--paper); border: 1px solid var(--rule); border-radius: 6px;
   padding: clamp(20px, 4vw, 40px); min-width: 0;
@@ -100,6 +100,25 @@ pre.code {
   .cover { grid-template-columns: 1fr; }
   .disc { width: 96px; height: 96px; order: -1; }
 }
+
+/* UML diagrams (inline SVG, colours from theme tokens) */
+.diagram svg.uml { display: block; width: 100%; height: auto; margin: 0 auto; }
+.uml text { font-family: var(--font-mono); }
+.uml .u-box { fill: var(--paper); stroke: var(--ink); stroke-width: 1.3; }
+.uml .u-div { stroke: var(--ink); stroke-width: 1; }
+.uml .u-line { fill: none; stroke: var(--ink); stroke-width: 1.3; }
+.uml .u-dash { stroke-dasharray: 6 4; }
+.uml .u-head-hollow { fill: var(--paper); stroke: var(--ink); stroke-width: 1.3; }
+.uml .u-head-solid, .uml .u-solid { fill: var(--ink); }
+.uml .u-name { font-size: 13px; font-weight: 600; fill: var(--ink); }
+.uml .u-italic { font-style: italic; }
+.uml .u-stereo { font-size: 11px; fill: var(--muted); }
+.uml .u-mem { font-size: 12px; fill: var(--ink); }
+.uml .u-uc { font-size: 12.5px; fill: var(--ink); }
+.uml .u-label { font-size: 11.5px; fill: var(--accent); }
+.uml .u-boundary { fill: none; stroke: var(--muted); stroke-width: 1.3; }
+.uml .u-var { fill: var(--accent-soft); stroke: var(--accent); }
+.diagram { background: var(--paper); }
 </style>
 <div class="wrap">
 
@@ -136,123 +155,479 @@ pre.code {
 </section>
 
 <section>
-  <h2><span class="n">2</span>UML class diagram</h2>
-  <p><code>Product</code> is an abstract class that holds what every item shares. <code>VinylRecord</code> and <code>Cassette</code> extend it, and <code>LimitedEdition</code> extends <code>VinylRecord</code>. Three interfaces add abilities: <code>Playable</code>, <code>Discountable</code>, and <code>Collectible</code>, which extends <code>Discountable</code>. <code>Store</code> is a Singleton that holds the product list.</p>
-  <div class="legend"><span><code>-</code> private</span><span><code>#</code> protected</span><span><code>~</code> package-private</span><span><code>+</code> public</span><span><code>$</code> static</span><span><code>*</code> abstract</span><span><code>&lt;|--</code> extends</span><span><code>..|&gt;</code> implements</span></div>
-  <div class="diagram"><pre class="mermaid">
-classDiagram
-  direction TB
-  class Product {
-    &lt;&lt;abstract&gt;&gt;
-    ~int productCount$
-    ~boolean showSteps$
-    -String name
-    -double price
-    #int stock
-    ~String category
-    +Product(name, price, stock)
-    +getType()* String
-    +showDetails() void
-    +getStoreName() String
-    +storeInfo()$ void
-    +sell(int quantity) void
-    +getName() String
-    +setName(String) void
-    +getPrice() double
-    +setPrice(double) void
-    +getStock() int
-    +setStock(int) void
-  }
-  class VinylRecord {
-    -String artist
-    ~String category
-    +VinylRecord()
-    +VinylRecord(name, artist, price, stock)
-    +VinylRecord(VinylRecord other)
-    +restock(int) void
-    +restock(int, String) void
-    +getType() String
-    +showDetails() void
-    +play() void
-    +applyDiscount(double) double
-    +storeInfo()$ void
-    +cleanRecord() void
-  }
-  class LimitedEdition {
-    -int serialNumber
-    +LimitedEdition(name, artist, price, stock, serial)
-    +getType() String
-    +play() void
-    +applyDiscount(double) double
-    +getCertificate() String
-  }
-  class Cassette {
-    +Cassette(name, price, stock)
-    +getType() String
-    +play() void
-  }
-  class Playable {
-    &lt;&lt;interface&gt;&gt;
-    +play()* void
-    +stop() void
-  }
-  class Discountable {
-    &lt;&lt;interface&gt;&gt;
-    +applyDiscount(double)* double
-  }
-  class Collectible {
-    &lt;&lt;interface&gt;&gt;
-    +getCertificate()* String
-  }
-  class Store {
-    -Store instance$
-    -String storeName
-    -ArrayList~Product~ products
-    -Store()
-    +getInstance()$ Store
-    +addProduct(Product) void
-    +getProducts() ArrayList~Product~
-    +findByName(String) Product
-  }
-  class Receipt {
-    &lt;&lt;static nested&gt;&gt;
-    -String item
-    -double amount
-    +print() void
-  }
-  class Cart {
-    &lt;&lt;inner&gt;&gt;
-    -ArrayList~Product~ items
-    +add(Product) void
-    +total() double
-  }
-  class Track {
-    ~String title
-    ~int seconds
-    ~getLength() String
-  }
-  class OutOfStockException {
-    &lt;&lt;checked&gt;&gt;
-  }
-  class InvalidPriceException {
-    &lt;&lt;unchecked&gt;&gt;
-  }
-  Product &lt;|-- VinylRecord
-  Product &lt;|-- Cassette
-  VinylRecord &lt;|-- LimitedEdition
-  VinylRecord ..|&gt; Playable
-  VinylRecord ..|&gt; Discountable
-  Cassette ..|&gt; Playable
-  LimitedEdition ..|&gt; Collectible
-  Discountable &lt;|-- Collectible
-  Store "1" o-- "*" Product : products
-  Store *-- Receipt
-  Store *-- Cart
-  Cart o-- "*" Product : items
-  Product ..&gt; OutOfStockException : throws
-  Product ..&gt; InvalidPriceException : throws
-  </pre></div>
-  <p class="caption">Figure 1. Class diagram. <code>Track</code> has no constructor of its own, so Java gives it the default one. <code>OutOfStockException</code> extends <code>Exception</code> and <code>InvalidPriceException</code> extends <code>RuntimeException</code>.</p>
+  <h2><span class="n">2</span>UML design</h2>
+  <p>The design is shown with five kinds of UML diagram. The use case diagram shows what the system does for its users. The three class diagrams show the classes and how they relate. The object diagram shows objects in memory. The two sequence diagrams and the activity diagram show what happens when the program runs.</p>
+
+  <h3>UML notation used</h3>
+  <div class="tbl"><table>
+    <tr><th>Symbol</th><th>Meaning</th><th>Example in this project</th></tr>
+    <tr><td class="mono">−  +  #  ~</td><td>private, public, protected, package-private</td><td><code>- price</code>, <code>+ getPrice()</code>, <code># stock</code>, <code>~ category</code></td></tr>
+    <tr><td><u class="mono">underlined</u></td><td>static member</td><td><code>productCount</code>, <code>getInstance()</code></td></tr>
+    <tr><td><i class="mono">italic</i></td><td>abstract class or abstract method</td><td><i>Product</i>, <i>getType()</i></td></tr>
+    <tr><td>solid line, hollow triangle</td><td>inheritance (<code>extends</code>)</td><td>VinylRecord → Product</td></tr>
+    <tr><td>dashed line, hollow triangle</td><td>realization (<code>implements</code>)</td><td>Cassette ⇢ Playable</td></tr>
+    <tr><td>hollow diamond</td><td>aggregation (holds a list of)</td><td>Store ◇— Product</td></tr>
+    <tr><td>circle with a plus</td><td>nested class</td><td>Store ⊕— Store.Cart</td></tr>
+    <tr><td>dashed line, open arrow</td><td>dependency (uses, creates, throws)</td><td>Product ⇢ OutOfStockException</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="n">2.1</span>Use case diagram</h2>
+  <p>Two kinds of people use the store. Customers browse, search, play previews and buy. Staff add products, restock, change prices and give discounts. Buying always includes a stock check. The out-of-stock error only happens when the check fails, which is why it is an «extend».</p>
+  <div class="diagram"><svg class="uml" viewBox="0 0 920 580" style="min-width:662px" role="img" aria-label="UML use case diagram" xmlns="http://www.w3.org/2000/svg">
+<rect class="u-boundary" x="170" y="20" width="580" height="540"/>
+<text class="u-name" x="184" y="44">Digital Vinyl Store</text>
+<ellipse class="u-box" cx="320" cy="90" rx="100" ry="26"/><text class="u-uc" x="320" y="95" text-anchor="middle">Browse products</text>
+<ellipse class="u-box" cx="320" cy="160" rx="100" ry="26"/><text class="u-uc" x="320" y="165" text-anchor="middle">Search by name</text>
+<ellipse class="u-box" cx="320" cy="230" rx="100" ry="26"/><text class="u-uc" x="320" y="235" text-anchor="middle">Play a preview</text>
+<ellipse class="u-box" cx="320" cy="300" rx="100" ry="26"/><text class="u-uc" x="320" y="305" text-anchor="middle">Add to cart</text>
+<ellipse class="u-box" cx="320" cy="370" rx="100" ry="26"/><text class="u-uc" x="320" y="375" text-anchor="middle">Buy a product</text>
+<ellipse class="u-box" cx="610" cy="90" rx="100" ry="26"/><text class="u-uc" x="610" y="95" text-anchor="middle">Add a product</text>
+<ellipse class="u-box" cx="610" cy="160" rx="100" ry="26"/><text class="u-uc" x="610" y="165" text-anchor="middle">Restock</text>
+<ellipse class="u-box" cx="610" cy="230" rx="100" ry="26"/><text class="u-uc" x="610" y="235" text-anchor="middle">Apply a discount</text>
+<ellipse class="u-box" cx="610" cy="300" rx="100" ry="26"/><text class="u-uc" x="610" y="305" text-anchor="middle">Change a price</text>
+<ellipse class="u-box" cx="320" cy="470" rx="100" ry="26"/><text class="u-uc" x="320" y="475" text-anchor="middle">Check stock</text>
+<ellipse class="u-box" cx="610" cy="400" rx="112" ry="26"/><text class="u-uc" x="610" y="405" text-anchor="middle">Reject negative price</text>
+<ellipse class="u-box" cx="610" cy="500" rx="118" ry="26"/><text class="u-uc" x="610" y="505" text-anchor="middle">Show out-of-stock error</text>
+<g class="u-actor"><circle class="u-box" cx="80" cy="170" r="13"/><path class="u-line" d="M80,183 L80,220 M58,197 L102,197 M80,220 L62,250 M80,220 L98,250"/><text class="u-name" x="80" y="272" text-anchor="middle">Customer</text></g>
+<g class="u-actor"><circle class="u-box" cx="840" cy="140" r="13"/><path class="u-line" d="M840,153 L840,190 M818,167 L862,167 M840,190 L822,220 M840,190 L858,220"/><text class="u-name" x="840" y="242" text-anchor="middle">Shop staff</text></g>
+<path class="u-line" d="M102,210 L220,90"/>
+<path class="u-line" d="M102,210 L220,160"/>
+<path class="u-line" d="M102,210 L220,230"/>
+<path class="u-line" d="M102,210 L220,300"/>
+<path class="u-line" d="M102,210 L220,370"/>
+<path class="u-line" d="M818,180 L710,90"/>
+<path class="u-line" d="M818,180 L710,160"/>
+<path class="u-line" d="M818,180 L710,230"/>
+<path class="u-line" d="M818,180 L710,300"/>
+<path class="u-line u-dash" d="M320,396 L320,444"/>
+<polyline class="u-line" points="326.0,433.0 320,444 314.0,433.0"/>
+<text class="u-label" x="328" y="424" text-anchor="start">«include»</text>
+<path class="u-line u-dash" d="M610,374 L610,326"/>
+<polyline class="u-line" points="604.0,337.0 610,326 616.0,337.0"/>
+<text class="u-label" x="618" y="356" text-anchor="start">«extend»</text>
+<path class="u-line u-dash" d="M492,500 L380,391"/>
+<polyline class="u-line" points="383.7,403.0 380,391 392.1,394.4"/>
+<text class="u-label" x="470" y="446" text-anchor="start">«extend»</text>
+</svg></div>
+  <p class="caption">Figure 1. Use case diagram. «include» means always done as part of the use case; «extend» means done only in a special case.</p>
+</section>
+
+<section>
+  <h2><span class="n">2.2</span>Class diagram: products and interfaces</h2>
+  <p><i>Product</i> is abstract and holds what every item shares. <code>VinylRecord</code> and <code>Cassette</code> extend it (hierarchical inheritance), and <code>LimitedEdition</code> extends <code>VinylRecord</code> (multilevel inheritance). <code>VinylRecord</code> implements two interfaces at once, which is how Java gets multiple inheritance. <code>Collectible</code> extends <code>Discountable</code>, so <code>LimitedEdition</code> must write both <code>getCertificate()</code> and <code>applyDiscount()</code>.</p>
+  <div class="diagram"><svg class="uml" viewBox="0 0 1142 948" style="min-width:822px" role="img" aria-label="UML class diagram of the product hierarchy and interfaces" xmlns="http://www.w3.org/2000/svg">
+<g class="u-class">
+<rect class="u-box" x="40" y="20" width="200" height="96"/>
+<text class="u-stereo" x="140.0" y="37" text-anchor="middle">«interface»</text>
+<text class="u-name" x="140.0" y="56" text-anchor="middle">Playable</text>
+<line class="u-div" x1="40" y1="62" x2="240" y2="62"/>
+<line class="u-div" x1="40" y1="74" x2="240" y2="74"/>
+<text class="u-mem u-italic" x="50" y="92">+ play() : void</text>
+<text class="u-mem" x="50" y="108">+ stop() : void {default}</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="340" y="20" width="258" height="350"/>
+<text class="u-stereo" x="469.0" y="37" text-anchor="middle">«abstract»</text>
+<text class="u-name u-italic" x="469.0" y="56" text-anchor="middle">Product</text>
+<line class="u-div" x1="340" y1="62" x2="598" y2="62"/>
+<text class="u-mem" x="350" y="80" text-decoration="underline">~ productCount : int</text>
+<text class="u-mem" x="350" y="96" text-decoration="underline">~ showSteps : boolean</text>
+<text class="u-mem" x="350" y="112">- name : String</text>
+<text class="u-mem" x="350" y="128">- price : double</text>
+<text class="u-mem" x="350" y="144"># stock : int</text>
+<text class="u-mem" x="350" y="160">~ category : String</text>
+<line class="u-div" x1="340" y1="168" x2="598" y2="168"/>
+<text class="u-mem" x="350" y="186">+ Product(name, price, stock)</text>
+<text class="u-mem u-italic" x="350" y="202">+ getType() : String</text>
+<text class="u-mem" x="350" y="218">+ showDetails() : void</text>
+<text class="u-mem" x="350" y="234">+ getStoreName() : String {final}</text>
+<text class="u-mem" x="350" y="250" text-decoration="underline">+ storeInfo() : void</text>
+<text class="u-mem" x="350" y="266">+ sell(quantity : int) : void</text>
+<text class="u-mem" x="350" y="282">+ getName() : String</text>
+<text class="u-mem" x="350" y="298">+ setName(name : String) : void</text>
+<text class="u-mem" x="350" y="314">+ getPrice() : double</text>
+<text class="u-mem" x="350" y="330">+ setPrice(price : double) : void</text>
+<text class="u-mem" x="350" y="346">+ getStock() : int</text>
+<text class="u-mem" x="350" y="362">+ setStock(stock : int) : void</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="800" y="20" width="322" height="80"/>
+<text class="u-stereo" x="961.0" y="37" text-anchor="middle">«interface»</text>
+<text class="u-name" x="961.0" y="56" text-anchor="middle">Discountable</text>
+<line class="u-div" x1="800" y1="62" x2="1122" y2="62"/>
+<line class="u-div" x1="800" y1="74" x2="1122" y2="74"/>
+<text class="u-mem u-italic" x="810" y="92">+ applyDiscount(percent : double) : double</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="800" y="190" width="322" height="80"/>
+<text class="u-stereo" x="961.0" y="207" text-anchor="middle">«interface»</text>
+<text class="u-name" x="961.0" y="226" text-anchor="middle">Collectible</text>
+<line class="u-div" x1="800" y1="232" x2="1122" y2="232"/>
+<line class="u-div" x1="800" y1="244" x2="1122" y2="244"/>
+<text class="u-mem u-italic" x="810" y="262">+ getCertificate() : String</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="40" y="440" width="236" height="96"/>
+<text class="u-name" x="158.0" y="463" text-anchor="middle">Cassette</text>
+<line class="u-div" x1="40" y1="466" x2="276" y2="466"/>
+<line class="u-div" x1="40" y1="478" x2="276" y2="478"/>
+<text class="u-mem" x="50" y="496">+ Cassette(name, price, stock)</text>
+<text class="u-mem" x="50" y="512">+ getType() : String</text>
+<text class="u-mem" x="50" y="528">+ play() : void</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="340" y="440" width="387" height="286"/>
+<text class="u-name" x="533.5" y="463" text-anchor="middle">VinylRecord</text>
+<line class="u-div" x1="340" y1="466" x2="727" y2="466"/>
+<text class="u-mem" x="350" y="484">- artist : String</text>
+<text class="u-mem" x="350" y="500">~ category : String</text>
+<line class="u-div" x1="340" y1="508" x2="727" y2="508"/>
+<text class="u-mem" x="350" y="526">+ VinylRecord()</text>
+<text class="u-mem" x="350" y="542">+ VinylRecord(name, artist, price, stock)</text>
+<text class="u-mem" x="350" y="558">+ VinylRecord(other : VinylRecord)</text>
+<text class="u-mem" x="350" y="574">+ restock(quantity : int) : void</text>
+<text class="u-mem" x="350" y="590">+ restock(quantity : int, supplier : String) : void</text>
+<text class="u-mem" x="350" y="606">+ getType() : String</text>
+<text class="u-mem" x="350" y="622">+ showDetails() : void</text>
+<text class="u-mem" x="350" y="638">+ play() : void</text>
+<text class="u-mem" x="350" y="654">+ applyDiscount(percent : double) : double</text>
+<text class="u-mem" x="350" y="670" text-decoration="underline">+ storeInfo() : void</text>
+<text class="u-mem" x="350" y="686">+ cleanRecord() : void</text>
+<text class="u-mem" x="350" y="702">+ getArtist() : String</text>
+<text class="u-mem" x="350" y="718">+ setArtist(artist : String) : void</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="340" y="786" width="394" height="142"/>
+<text class="u-name" x="537.0" y="809" text-anchor="middle">LimitedEdition</text>
+<line class="u-div" x1="340" y1="812" x2="734" y2="812"/>
+<text class="u-mem" x="350" y="830">- serialNumber : int</text>
+<line class="u-div" x1="340" y1="838" x2="734" y2="838"/>
+<text class="u-mem" x="350" y="856">+ LimitedEdition(name, artist, price, stock, serial)</text>
+<text class="u-mem" x="350" y="872">+ getType() : String</text>
+<text class="u-mem" x="350" y="888">+ play() : void</text>
+<text class="u-mem" x="350" y="904">+ applyDiscount(percent : double) : double</text>
+<text class="u-mem" x="350" y="920">+ getCertificate() : String</text>
+</g>
+<path class="u-line" d="M500,440 L500,370"/>
+<polygon class="u-head-hollow" points="500,370 492.0,384.0 508.0,384.0"/>
+<path class="u-line" d="M500,786 L500,726"/>
+<polygon class="u-head-hollow" points="500,726 492.0,740.0 508.0,740.0"/>
+<path class="u-line" d="M276,470 L308.0,470 L308.0,240 L340,240"/>
+<polygon class="u-head-hollow" points="340,240 326.0,232.0 326.0,248.0"/>
+<path class="u-line u-dash" d="M160,440 L160,116"/>
+<polygon class="u-head-hollow" points="160,116 152.0,130.0 168.0,130.0"/>
+<path class="u-line u-dash" d="M340,686 L20,686 L20,80 L40,80"/>
+<polygon class="u-head-hollow" points="40,80 26.0,72.0 26.0,88.0"/>
+<path class="u-line u-dash" d="M727,470 L763.5,470 L763.5,76 L800,76"/>
+<polygon class="u-head-hollow" points="800,76 786.0,68.0 786.0,84.0"/>
+<path class="u-line" d="M961.0,190 L961.0,100"/>
+<polygon class="u-head-hollow" points="961.0,100 953.0,114.0 969.0,114.0"/>
+<path class="u-line u-dash" d="M734,826 L961.0,826 L961.0,270"/>
+<polygon class="u-head-hollow" points="961.0,270 953.0,284.0 969.0,284.0"/>
+</svg></div>
+  <p class="caption">Figure 2. Product hierarchy. The overloaded <code>restock()</code> and the three <code>VinylRecord</code> constructors appear as separate lines in the operations compartment.</p>
+</section>
+
+<section>
+  <h2><span class="n">2.3</span>Class diagram: store and helpers</h2>
+  <p><code>Store</code> is a Singleton: its constructor is private, and <code>getInstance()</code> always returns the same object. It holds a list of products. <code>Store.Receipt</code> is a static nested class and <code>Store.Cart</code> is an inner class. <code>Track</code> has no constructor of its own, so Java gives it a default one.</p>
+  <div class="diagram"><svg class="uml" viewBox="0 0 1130 436" style="min-width:813px" role="img" aria-label="UML class diagram of the store, its nested classes, Track and Main" xmlns="http://www.w3.org/2000/svg">
+<g class="u-class">
+<rect class="u-box" x="20" y="20" width="236" height="96"/>
+<text class="u-name" x="138.0" y="43" text-anchor="middle">Main</text>
+<line class="u-div" x1="20" y1="46" x2="256" y2="46"/>
+<line class="u-div" x1="20" y1="58" x2="256" y2="58"/>
+<text class="u-mem" x="30" y="76" text-decoration="underline">+ main(args : String[]) : void</text>
+<text class="u-mem" x="30" y="92" text-decoration="underline">~ runTopic(n : int) : void</text>
+<text class="u-mem" x="30" y="108" text-decoration="underline">~ topic1() … topic8() : void</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="360" y="20" width="286" height="190"/>
+<text class="u-stereo" x="503.0" y="37" text-anchor="middle">«singleton»</text>
+<text class="u-name" x="503.0" y="56" text-anchor="middle">Store</text>
+<line class="u-div" x1="360" y1="62" x2="646" y2="62"/>
+<text class="u-mem" x="370" y="80" text-decoration="underline">- instance : Store</text>
+<text class="u-mem" x="370" y="96">- storeName : String</text>
+<text class="u-mem" x="370" y="112">- products : ArrayList&lt;Product&gt;</text>
+<line class="u-div" x1="360" y1="120" x2="646" y2="120"/>
+<text class="u-mem" x="370" y="138">- Store()</text>
+<text class="u-mem" x="370" y="154" text-decoration="underline">+ getInstance() : Store</text>
+<text class="u-mem" x="370" y="170">+ addProduct(p : Product) : void</text>
+<text class="u-mem" x="370" y="186">+ getProducts() : ArrayList&lt;Product&gt;</text>
+<text class="u-mem" x="370" y="202">+ findByName(name : String) : Product</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="960" y="60" width="150" height="42"/>
+<text class="u-stereo" x="1035.0" y="77" text-anchor="middle">«abstract»</text>
+<text class="u-name u-italic" x="1035.0" y="96" text-anchor="middle">Product</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="330" y="290" width="186" height="126"/>
+<text class="u-stereo" x="423.0" y="307" text-anchor="middle">«static nested class»</text>
+<text class="u-name" x="423.0" y="326" text-anchor="middle">Store.Receipt</text>
+<line class="u-div" x1="330" y1="332" x2="516" y2="332"/>
+<text class="u-mem" x="340" y="350">- item : String</text>
+<text class="u-mem" x="340" y="366">- amount : double</text>
+<line class="u-div" x1="330" y1="374" x2="516" y2="374"/>
+<text class="u-mem" x="340" y="392">+ Receipt(item, amount)</text>
+<text class="u-mem" x="340" y="408">+ print() : void</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="640" y="290" width="222" height="110"/>
+<text class="u-stereo" x="751.0" y="307" text-anchor="middle">«inner class»</text>
+<text class="u-name" x="751.0" y="326" text-anchor="middle">Store.Cart</text>
+<line class="u-div" x1="640" y1="332" x2="862" y2="332"/>
+<text class="u-mem" x="650" y="350">- items : ArrayList&lt;Product&gt;</text>
+<line class="u-div" x1="640" y1="358" x2="862" y2="358"/>
+<text class="u-mem" x="650" y="376">+ add(p : Product) : void</text>
+<text class="u-mem" x="650" y="392">+ total() : double</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="20" y="290" width="178" height="94"/>
+<text class="u-name" x="109.0" y="313" text-anchor="middle">Track</text>
+<line class="u-div" x1="20" y1="316" x2="198" y2="316"/>
+<text class="u-mem" x="30" y="334">~ title : String</text>
+<text class="u-mem" x="30" y="350">~ seconds : int</text>
+<line class="u-div" x1="20" y1="358" x2="198" y2="358"/>
+<text class="u-mem" x="30" y="376">~ getLength() : String</text>
+</g>
+<path class="u-line u-dash" d="M256,60 L360,60"/>
+<polyline class="u-line" points="349.0,54.0 360,60 349.0,66.0"/>
+<text class="u-label" x="264" y="52" text-anchor="start">«uses»</text>
+<path class="u-line u-dash" d="M80,116 L80,290"/>
+<polyline class="u-line" points="86.0,279.0 80,290 74.0,279.0"/>
+<text class="u-label" x="88" y="207.0" text-anchor="start">«creates»</text>
+<path class="u-line" d="M646,81.0 L960,81.0"/>
+<polygon class="u-head-hollow" points="646,81.0 655.0,87.0 664.0,81.0 655.0,75.0"/>
+<path class="u-line" d="M423.0,210 L423.0,290"/>
+<circle class="u-head-hollow" cx="423.0" cy="218.0" r="8"/><line class="u-line" x1="415.0" y1="218.0" x2="431.0" y2="218.0"/><line class="u-line" x1="423.0" y1="210.0" x2="423.0" y2="226.0"/>
+<path class="u-line" d="M751.0,210 L751.0,290"/>
+<circle class="u-head-hollow" cx="751.0" cy="218.0" r="8"/><line class="u-line" x1="743.0" y1="218.0" x2="759.0" y2="218.0"/><line class="u-line" x1="751.0" y1="210.0" x2="751.0" y2="226.0"/>
+<path class="u-line" d="M862,330 L1035.0,330 L1035.0,102"/>
+<polygon class="u-head-hollow" points="862,330 871.0,336.0 880.0,330.0 871.0,324.0"/>
+<text class="u-label" x="666" y="73.0">products</text>
+<text class="u-label" x="952" y="73.0" text-anchor="end">0..*</text>
+<text class="u-label" x="656" y="99.0">1</text>
+<text class="u-label" x="872" y="322">items</text>
+<text class="u-label" x="1043.0" y="120">0..*</text>
+</svg></div>
+  <p class="caption">Figure 3. Store, its nested classes, Track and Main. <i>Product</i> is shown with its compartments hidden; Figure 2 has the full box.</p>
+</section>
+
+<section>
+  <h2><span class="n">2.4</span>Class diagram: exceptions</h2>
+  <p>Both custom exceptions extend Java's built-in classes. <code>OutOfStockException</code> extends <code>Exception</code>, so it is checked: whoever calls <code>sell()</code> must catch it. <code>InvalidPriceException</code> extends <code>RuntimeException</code>, so it is unchecked.</p>
+  <div class="diagram"><svg class="uml" viewBox="0 0 755 352" style="min-width:543px" role="img" aria-label="UML class diagram of the exception classes" xmlns="http://www.w3.org/2000/svg">
+<g class="u-class">
+<rect class="u-box" x="230" y="20" width="150" height="42"/>
+<text class="u-stereo" x="305.0" y="37" text-anchor="middle">«java.lang»</text>
+<text class="u-name" x="305.0" y="56" text-anchor="middle">Exception</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="420" y="130" width="150" height="42"/>
+<text class="u-stereo" x="495.0" y="147" text-anchor="middle">«java.lang»</text>
+<text class="u-name" x="495.0" y="166" text-anchor="middle">RuntimeException</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="20" y="130" width="301" height="80"/>
+<text class="u-stereo" x="170.5" y="147" text-anchor="middle">«checked»</text>
+<text class="u-name" x="170.5" y="166" text-anchor="middle">OutOfStockException</text>
+<line class="u-div" x1="20" y1="172" x2="321" y2="172"/>
+<line class="u-div" x1="20" y1="184" x2="321" y2="184"/>
+<text class="u-mem" x="30" y="202">+ OutOfStockException(message : String)</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="420" y="250" width="315" height="80"/>
+<text class="u-stereo" x="577.5" y="267" text-anchor="middle">«unchecked»</text>
+<text class="u-name" x="577.5" y="286" text-anchor="middle">InvalidPriceException</text>
+<line class="u-div" x1="420" y1="292" x2="735" y2="292"/>
+<line class="u-div" x1="420" y1="304" x2="735" y2="304"/>
+<text class="u-mem" x="430" y="322">+ InvalidPriceException(message : String)</text>
+</g>
+<g class="u-class">
+<rect class="u-box" x="20" y="290" width="150" height="42"/>
+<text class="u-stereo" x="95.0" y="307" text-anchor="middle">«abstract»</text>
+<text class="u-name u-italic" x="95.0" y="326" text-anchor="middle">Product</text>
+</g>
+<path class="u-line" d="M170.5,130 L170.5,92 L270,92 L270,62"/>
+<polygon class="u-head-hollow" points="270,62 262.0,76.0 278.0,76.0"/>
+<path class="u-line" d="M495.0,130 L495.0,92 L340,92 L340,62"/>
+<polygon class="u-head-hollow" points="340,62 332.0,76.0 348.0,76.0"/>
+<path class="u-line" d="M495.0,250 L495.0,172"/>
+<polygon class="u-head-hollow" points="495.0,172 487.0,186.0 503.0,186.0"/>
+<path class="u-line u-dash" d="M95.0,290 L95.0,210"/>
+<polyline class="u-line" points="89.0,221.0 95.0,210 101.0,221.0"/>
+<text class="u-label" x="103.0" y="254.0" text-anchor="start">«throws»</text>
+<path class="u-line u-dash" d="M170,311.0 L420,311.0"/>
+<polyline class="u-line" points="409.0,305.0 420,311.0 409.0,317.0"/>
+<text class="u-label" x="182" y="303.0" text-anchor="start">«throws»</text>
+</svg></div>
+  <p class="caption">Figure 4. Exception classes. <code>sell()</code> throws OutOfStockException; <code>setPrice()</code> throws InvalidPriceException.</p>
+</section>
+
+<section>
+  <h2><span class="n">2.5</span>Object diagram</h2>
+  <p>This is memory after Topic 1 runs <code>VinylRecord c = a;</code> and <code>c.setStock(99)</code>. No new object was made, so <code>a</code> and <code>c</code> point to the same object and both see stock 99. <code>b</code> is a separate object with its own values.</p>
+  <div class="diagram"><svg class="uml" viewBox="0 0 650 290" style="min-width:468px" role="img" aria-label="UML object diagram showing two references to one object" xmlns="http://www.w3.org/2000/svg">
+<rect class="u-box" x="300" y="20" width="330" height="116"/>
+<text class="u-name" x="465.0" y="42" text-anchor="middle" text-decoration="underline">a : VinylRecord</text>
+<line class="u-div" x1="300" y1="52" x2="630" y2="52"/>
+<text class="u-mem" x="310" y="70">name = &quot;Random Access Memories&quot;</text>
+<text class="u-mem" x="310" y="88">artist = &quot;Daft Punk&quot;</text>
+<text class="u-mem" x="310" y="106">price = 2299.0</text>
+<text class="u-mem" x="310" y="124">stock = 99</text>
+<rect class="u-box" x="300" y="170" width="330" height="116"/>
+<text class="u-name" x="465.0" y="192" text-anchor="middle" text-decoration="underline">b : VinylRecord</text>
+<line class="u-div" x1="300" y1="202" x2="630" y2="202"/>
+<text class="u-mem" x="310" y="220">name = &quot;Kind of Blue&quot;</text>
+<text class="u-mem" x="310" y="238">artist = &quot;Miles Davis&quot;</text>
+<text class="u-mem" x="310" y="256">price = 1899.0</text>
+<text class="u-mem" x="310" y="274">stock = 7</text>
+<rect class="u-var" x="40" y="40" width="70" height="30"/><text class="u-mem" x="75" y="60" text-anchor="middle">a</text>
+<rect class="u-var" x="40" y="90" width="70" height="30"/><text class="u-mem" x="75" y="110" text-anchor="middle">c</text>
+<rect class="u-var" x="40" y="200" width="70" height="30"/><text class="u-mem" x="75" y="220" text-anchor="middle">b</text>
+<path class="u-line" d="M110,55 L300,55"/>
+<polyline class="u-line" points="289.0,49.0 300,55 289.0,61.0"/>
+<path class="u-line" d="M110,105 L200,105 L200,80 L300,80"/>
+<polyline class="u-line" points="289.0,74.0 300,80 289.0,86.0"/>
+<path class="u-line" d="M110,215 L300,215"/>
+<polyline class="u-line" points="289.0,209.0 300,215 289.0,221.0"/>
+<text class="u-label" x="40" y="28">reference variables</text>
+<text class="u-label" x="300" y="12">objects in memory</text>
+</svg></div>
+  <p class="caption">Figure 5. Object diagram. Object names are underlined, in the form <span class="mono">objectName : ClassName</span>.</p>
+</section>
+
+<section>
+  <h2><span class="n">2.6</span>Sequence diagram: creating a limited edition</h2>
+  <p>Creating <code>new LimitedEdition(...)</code> runs the constructors from the top parent down. Each constructor's first line calls <code>super(...)</code>, so the Product part is set up first and the LimitedEdition part last.</p>
+  <div class="diagram"><svg class="uml" viewBox="0 0 880 484" style="min-width:633px" role="img" aria-label="UML sequence diagram of creating a LimitedEdition object" xmlns="http://www.w3.org/2000/svg">
+<rect class="u-box" x="45.0" y="20" width="90" height="36"/>
+<text class="u-name" x="90" y="43" text-anchor="middle" text-decoration="underline">:Main</text>
+<line class="u-line u-dash" x1="90" y1="56" x2="90" y2="474"/>
+<rect class="u-box" x="326.1" y="20" width="187.79999999999998" height="36"/>
+<text class="u-name" x="420" y="43" text-anchor="middle" text-decoration="underline">gold : LimitedEdition</text>
+<line class="u-line u-dash" x1="420" y1="56" x2="420" y2="474"/>
+<path class="u-line" d="M90,80 L420,80"/>
+<polygon class="u-head-solid" points="420,80 409.0,74.0 409.0,86.0"/>
+<text class="u-label" x="255.0" y="73" text-anchor="middle">new LimitedEdition(&quot;Kind of Blue&quot;, …, 42)</text>
+<path class="u-line" d="M420,122 L460,122 L460,144 L420,144"/>
+<polyline class="u-line" points="431.0,150.0 420,144 431.0,138.0"/>
+<text class="u-label" x="468" y="137">1. super(name, artist, price, stock)  → VinylRecord constructor</text>
+<path class="u-line" d="M420,172 L460,172 L460,194 L420,194"/>
+<polyline class="u-line" points="431.0,200.0 420,194 431.0,188.0"/>
+<text class="u-label" x="468" y="187">2. super(name, price, stock)  → Product constructor</text>
+<path class="u-line" d="M420,222 L460,222 L460,244 L420,244"/>
+<polyline class="u-line" points="431.0,250.0 420,244 431.0,238.0"/>
+<text class="u-label" x="468" y="237">3. instance block: productCount++</text>
+<path class="u-line" d="M420,272 L460,272 L460,294 L420,294"/>
+<polyline class="u-line" points="431.0,300.0 420,294 431.0,288.0"/>
+<text class="u-label" x="468" y="287">4. Product body: name, price, stock set</text>
+<path class="u-line" d="M420,322 L460,322 L460,344 L420,344"/>
+<polyline class="u-line" points="431.0,350.0 420,344 431.0,338.0"/>
+<text class="u-label" x="468" y="337">5. VinylRecord body: artist = &quot;Miles Davis&quot;</text>
+<path class="u-line" d="M420,372 L460,372 L460,394 L420,394"/>
+<polyline class="u-line" points="431.0,400.0 420,394 431.0,388.0"/>
+<text class="u-label" x="468" y="387">6. LimitedEdition body: serialNumber = 42</text>
+<path class="u-line u-dash" d="M420,422 L90,422"/>
+<polyline class="u-line" points="101.0,428.0 90,422 101.0,416.0"/>
+<text class="u-label" x="255.0" y="415" text-anchor="middle">reference to the new object</text>
+</svg></div>
+  <p class="caption">Figure 6. Constructor chain, shown as self-calls because it all happens inside one object. Run <code>java -cp out Main 4</code> to see the same order printed.</p>
+</section>
+
+<section>
+  <h2><span class="n">2.7</span>Sequence diagram: selling a record</h2>
+  <p>The shop has 3 copies. <code>sell(2)</code> succeeds. <code>sell(10)</code> creates an <code>OutOfStockException</code> and throws it back to <code>Main</code>, which catches it. The <code>finally</code> block runs both times.</p>
+  <div class="diagram"><svg class="uml" viewBox="0 0 840 568" style="min-width:604px" role="img" aria-label="UML sequence diagram of selling a record" xmlns="http://www.w3.org/2000/svg">
+<rect class="u-box" x="27.300000000000004" y="20" width="125.39999999999999" height="36"/>
+<text class="u-name" x="90" y="43" text-anchor="middle" text-decoration="underline">Main.topic8()</text>
+<line class="u-line u-dash" x1="90" y1="56" x2="90" y2="558"/>
+<rect class="u-box" x="321.7" y="20" width="156.6" height="36"/>
+<text class="u-name" x="400" y="43" text-anchor="middle" text-decoration="underline">ram : VinylRecord</text>
+<line class="u-line u-dash" x1="400" y1="56" x2="400" y2="558"/>
+<rect class="u-box" x="598.3" y="338" width="203.4" height="36"/>
+<text class="u-name" x="700" y="361" text-anchor="middle" text-decoration="underline">e : OutOfStockException</text>
+<line class="u-line u-dash" x1="700" y1="374" x2="700" y2="558"/>
+<path class="u-line" d="M90,80 L400,80"/>
+<polygon class="u-head-solid" points="400,80 389.0,74.0 389.0,86.0"/>
+<text class="u-label" x="245.0" y="73" text-anchor="middle">sell(2)</text>
+<path class="u-line" d="M400,122 L440,122 L440,144 L400,144"/>
+<polyline class="u-line" points="411.0,150.0 400,144 411.0,138.0"/>
+<text class="u-label" x="448" y="137">2 ≤ stock (3), so stock = 1</text>
+<path class="u-line u-dash" d="M400,172 L90,172"/>
+<polyline class="u-line" points="101.0,178.0 90,172 101.0,166.0"/>
+<text class="u-label" x="245.0" y="165" text-anchor="middle">returns normally</text>
+<path class="u-line" d="M90,214 L130,214 L130,236 L90,236"/>
+<polyline class="u-line" points="101.0,242.0 90,236 101.0,230.0"/>
+<text class="u-label" x="138" y="229">finally: print &quot;always runs&quot;</text>
+<path class="u-line" d="M90,264 L400,264"/>
+<polygon class="u-head-solid" points="400,264 389.0,258.0 389.0,270.0"/>
+<text class="u-label" x="245.0" y="257" text-anchor="middle">sell(10)</text>
+<path class="u-line" d="M400,306 L440,306 L440,328 L400,328"/>
+<polyline class="u-line" points="411.0,334.0 400,328 411.0,322.0"/>
+<text class="u-label" x="448" y="321">10 &gt; stock (1)</text>
+<path class="u-line u-dash" d="M400,356 L598.3,356"/>
+<polyline class="u-line" points="587.3,350.0 598.3,356 587.3,362.0"/>
+<text class="u-label" x="550.0" y="349" text-anchor="middle">«create»</text>
+<path class="u-line u-dash" d="M400,406 L90,406"/>
+<polyline class="u-line" points="101.0,412.0 90,406 101.0,400.0"/>
+<text class="u-label" x="245.0" y="399" text-anchor="middle">throw e</text>
+<path class="u-line" d="M90,448 L130,448 L130,470 L90,470"/>
+<polyline class="u-line" points="101.0,476.0 90,470 101.0,464.0"/>
+<text class="u-label" x="138" y="463">catch: print e.getMessage()</text>
+<path class="u-line" d="M90,498 L130,498 L130,520 L90,520"/>
+<polyline class="u-line" points="101.0,526.0 90,520 101.0,514.0"/>
+<text class="u-label" x="138" y="513">finally: print &quot;always runs&quot;</text>
+</svg></div>
+  <p class="caption">Figure 7. Sequence diagram for Topic 8. Solid arrows are calls; dashed arrows are returns, a throw, or creating an object.</p>
+</section>
+
+<section>
+  <h2><span class="n">2.8</span>Activity diagram: sell inside try / catch / finally</h2>
+  <div class="diagram"><svg class="uml" viewBox="0 0 620 545" style="min-width:446px" role="img" aria-label="UML activity diagram of selling inside try, catch and finally" xmlns="http://www.w3.org/2000/svg">
+<circle class="u-solid" cx="300" cy="30" r="11"/>
+<path class="u-line" d="M300,41 L300,70"/>
+<polyline class="u-line" points="306.0,59.0 300,70 294.0,59.0"/>
+<rect class="u-box" x="181.2" y="70" width="237.6" height="38" rx="14"/><text class="u-mem" x="300" y="94" text-anchor="middle">try: call ram.sell(quantity)</text>
+<path class="u-line" d="M300,108 L300,134"/>
+<polyline class="u-line" points="306.0,123.0 300,134 294.0,123.0"/>
+<polygon class="u-box" points="300,134 318,152 300,170 282,152"/>
+<path class="u-line" d="M282,152 L140,152 L140,196"/>
+<polyline class="u-line" points="146.0,185.0 140,196 134.0,185.0"/>
+<text class="u-label" x="144" y="144" text-anchor="start">[quantity ≤ stock]</text>
+<path class="u-line" d="M318,152 L460,152 L460,196"/>
+<polyline class="u-line" points="466.0,185.0 460,196 454.0,185.0"/>
+<text class="u-label" x="456" y="144" text-anchor="end">[quantity &gt; stock]</text>
+<rect class="u-box" x="30.0" y="196" width="220" height="38" rx="14"/><text class="u-mem" x="140" y="220" text-anchor="middle">stock = stock − quantity</text>
+<path class="u-line" d="M140,234 L140,262"/>
+<polyline class="u-line" points="146.0,251.0 140,262 134.0,251.0"/>
+<rect class="u-box" x="30.0" y="262" width="220" height="38" rx="14"/><text class="u-mem" x="140" y="286" text-anchor="middle">print &quot;Sold …&quot;</text>
+<path class="u-line" d="M140,300 L140,328"/>
+<polyline class="u-line" points="146.0,317.0 140,328 134.0,317.0"/>
+<rect class="u-box" x="30.0" y="328" width="220" height="38" rx="14"/><text class="u-mem" x="140" y="352" text-anchor="middle">rest of try block runs</text>
+<rect class="u-box" x="340.0" y="196" width="240" height="38" rx="14"/><text class="u-mem" x="460" y="220" text-anchor="middle">throw OutOfStockException</text>
+<path class="u-line" d="M460,234 L460,262"/>
+<polyline class="u-line" points="466.0,251.0 460,262 454.0,251.0"/>
+<rect class="u-box" x="340.0" y="262" width="240" height="38" rx="14"/><text class="u-mem" x="460" y="286" text-anchor="middle">rest of try is skipped</text>
+<path class="u-line" d="M460,300 L460,328"/>
+<polyline class="u-line" points="466.0,317.0 460,328 454.0,317.0"/>
+<rect class="u-box" x="340.0" y="328" width="240" height="38" rx="14"/><text class="u-mem" x="460" y="352" text-anchor="middle">catch: print message</text>
+<path class="u-line" d="M140,366 L140,400 L282,400"/>
+<polyline class="u-line" points="271.0,394.0 282,400 271.0,406.0"/>
+<path class="u-line" d="M460,366 L460,400 L318,400"/>
+<polyline class="u-line" points="329.0,406.0 318,400 329.0,394.0"/>
+<polygon class="u-box" points="300,382 318,400 300,418 282,400"/>
+<path class="u-line" d="M300,418 L300,444"/>
+<polyline class="u-line" points="306.0,433.0 300,444 294.0,433.0"/>
+<rect class="u-box" x="180.0" y="444" width="240" height="38" rx="14"/><text class="u-mem" x="300" y="468" text-anchor="middle">finally: always runs</text>
+<path class="u-line" d="M300,482 L300,508"/>
+<polyline class="u-line" points="306.0,497.0 300,508 294.0,497.0"/>
+<circle class="u-box" cx="300" cy="520" r="12"/><circle class="u-solid" cx="300" cy="520" r="7"/>
+</svg></div>
+  <p class="caption">Figure 8. Both paths meet before <code>finally</code>, so it always runs, whether the sale works or throws.</p>
 
   <h3>What each class does</h3>
   <div class="tbl"><table>
@@ -266,44 +641,13 @@ classDiagram
     <tr><td><b>Store</b></td><td>Singleton class</td><td>The one shop. Holds <code>ArrayList&lt;Product&gt;</code> and searches it by name.</td></tr>
     <tr><td><b>Store.Receipt</b>, <b>Store.Cart</b></td><td>nested classes</td><td>Receipt needs no Store object. Cart is an inner class that uses the Store's name.</td></tr>
     <tr><td><b>Track</b></td><td>class</td><td>One song. Used for the default constructor and the array of objects.</td></tr>
+    <tr><td><b>OutOfStockException</b>, <b>InvalidPriceException</b></td><td>exception classes</td><td>Checked and unchecked errors for selling and pricing.</td></tr>
     <tr><td><b>Main</b></td><td>class</td><td>Menu plus <code>topic1()</code> to <code>topic8()</code>.</td></tr>
   </table></div>
 </section>
 
 <section>
-  <h2><span class="n">3</span>Behaviour</h2>
-  <h3>Sequence: selling a record</h3>
-  <p>This is the flow in Topic 8, where the shop has 3 copies of Random Access Memories.</p>
-  <div class="diagram"><pre class="mermaid">
-sequenceDiagram
-  participant M as Main.topic8()
-  participant V as ram : VinylRecord
-  M->>V: sell(2)
-  V->>V: 2 &lt;= stock (3), so stock = 1
-  V-->>M: prints "Sold 2 ... Stock left: 1"
-  Note over M: finally block runs
-  M->>V: sell(10)
-  V->>V: 10 &gt; stock (1)
-  V--xM: throw OutOfStockException
-  M->>M: catch prints the message
-  Note over M: finally block runs
-  </pre></div>
-  <p class="caption">Figure 2. The first sale succeeds. The second throws a checked exception, which <code>Main</code> catches. The <code>finally</code> block runs both times.</p>
-
-  <h3>Object creation order</h3>
-  <p>Creating <code>new LimitedEdition(...)</code> builds the object from the top parent down.</p>
-  <div class="diagram"><pre class="mermaid">
-flowchart LR
-  A["static block<br/>(once, when Product loads)"] --> B["instance block<br/>of Product"]
-  B --> C["Product<br/>constructor"]
-  C --> D["VinylRecord<br/>constructor"]
-  D --> E["LimitedEdition<br/>constructor"]
-  </pre></div>
-  <p class="caption">Figure 3. Each constructor first calls <code>super(...)</code>, so the parent's part is always ready before the child's part.</p>
-</section>
-
-<section>
-  <h2><span class="n">4</span>Syllabus coverage</h2>
+  <h2><span class="n">3</span>Syllabus coverage</h2>
   <p>Every topic in the rubric is covered. Run a topic with <code>java -cp out Main &lt;number&gt;</code>.</p>
   <div class="tbl"><table>
     <tr><th>Menu</th><th>Syllabus topic</th><th>What the demo shows</th></tr>
@@ -319,7 +663,7 @@ flowchart LR
 </section>
 
 <section>
-  <h2><span class="n">5</span>Demo plan (5 minutes)</h2>
+  <h2><span class="n">4</span>Demo plan (5 minutes)</h2>
   <ol class="steps">
     <li><span class="t">0:00</span><div><b>Compile.</b> Run <code>javac -d out src/*.java</code>, then <code>java -cp out Main</code> to show the menu.</div></li>
     <li><span class="t">0:30</span><div><b>Topic 1.</b> The negative price is rejected and the old price stays. <code>c = a</code> changes both, because they are one object.</div></li>
@@ -336,7 +680,7 @@ flowchart LR
 </section>
 
 <section>
-  <h2><span class="n">6</span>Limitations and future work</h2>
+  <h2><span class="n">5</span>Limitations and future work</h2>
   <ul>
     <li>Data is created in code and is lost when the program ends. Saving to a file would keep it.</li>
     <li>The menu runs demonstrations. A full shop menu (add item, sell item, show cart) could use the same classes.</li>
