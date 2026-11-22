@@ -1,0 +1,664 @@
+<title>Vinyl Store Viva Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: study notes. One column, topic chips to jump, each topic = idea table, code card, output, Q&A list */
+:root {
+  --bg: #f6f7f9;
+  --paper: #ffffff;
+  --ink: #17191f;
+  --muted: #5b6170;
+  --rule: #dfe2e8;
+  --accent: #1d4f8c;
+  --accent-soft: #e6eef8;
+  --out: #1f6b45;
+  --out-soft: #e7f4ec;
+  --warn: #8a4b0f;
+  --warn-soft: #fbf0e2;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111318; --paper: #181b22; --ink: #e8eaf0; --muted: #9aa1b2; --rule: #2b303b;
+    --accent: #7fb0ee; --accent-soft: #1c2a3d; --out: #6fd29c; --out-soft: #15281f;
+    --warn: #f0b26a; --warn-soft: #2e2416; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111318; --paper: #181b22; --ink: #e8eaf0; --muted: #9aa1b2; --rule: #2b303b;
+  --accent: #7fb0ee; --accent-soft: #1c2a3d; --out: #6fd29c; --out-soft: #15281f;
+  --warn: #f0b26a; --warn-soft: #2e2416; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 36px 64px;
+}
+.wrap { max-width: 880px; margin: 0 auto; display: grid; gap: 24px; }
+section, header { background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: clamp(18px, 4vw, 36px); min-width: 0; scroll-margin-top: 16px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); }
+h2 { font-size: 1.45rem; margin-bottom: 6px; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+h2 .n { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); font-weight: 500; }
+h3 { font-size: 1.05rem; margin: 22px 0 8px; }
+p, li { max-width: 68ch; }
+p { margin: 0 0 12px; }
+ul, ol { margin: 0 0 12px; padding-left: 1.3em; }
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--accent-soft); padding: 1px 5px; border-radius: 3px; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lede { color: var(--muted); font-size: 1.05rem; margin-top: 8px; }
+.run { font-size: 0.92rem; color: var(--muted); }
+
+nav.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+nav.chips a {
+  font-size: 0.88rem; text-decoration: none; color: var(--accent);
+  border: 1px solid var(--rule); border-radius: 99px; padding: 4px 12px; background: var(--paper);
+}
+nav.chips a:hover, nav.chips a:focus-visible { border-color: var(--accent); outline: none; }
+
+.terms { display: grid; grid-template-columns: minmax(120px, 210px) 1fr; border-top: 1px solid var(--rule); }
+.terms dt, .terms dd { margin: 0; padding: 9px 10px 9px 0; border-bottom: 1px solid var(--rule); }
+.terms dt { font-weight: 600; }
+.terms dd { min-width: 0; }
+@media (max-width: 560px) {
+  .terms { grid-template-columns: 1fr; }
+  .terms dt { border-bottom: 0; padding-bottom: 0; }
+}
+
+.codepair { display: grid; grid-template-columns: 1fr; gap: 0; margin: 8px 0 14px; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+.codepair pre { margin: 0; padding: 14px 16px; overflow-x: auto; font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.55; }
+.codepair .src { background: var(--bg); }
+.codepair .out { background: var(--out-soft); color: var(--out); border-top: 1px solid var(--rule); }
+.codepair .label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px; }
+
+.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin: 22px 0 8px; }
+.toolbar h3 { margin: 0; }
+button.toggle {
+  font: inherit; font-size: 0.85rem; color: var(--accent); background: transparent;
+  border: 1px solid var(--rule); border-radius: 4px; padding: 4px 10px; cursor: pointer;
+}
+button.toggle:hover, button.toggle:focus-visible { border-color: var(--accent); outline: none; }
+
+.qa { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.qa details { border-bottom: 1px solid var(--rule); }
+.qa summary { cursor: pointer; padding: 10px 0; font-weight: 500; list-style: none; display: grid; grid-template-columns: 1.4em 1fr; gap: 6px; }
+.qa summary::-webkit-details-marker { display: none; }
+.qa summary::before { content: "+"; font-family: var(--font-mono); color: var(--accent); }
+.qa details[open] summary::before { content: "−"; }
+.qa summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.qa .a { padding: 0 0 12px 1.4em; margin-left: 6px; color: var(--ink); }
+.qa .a p:last-child { margin-bottom: 0; }
+
+.where { font-size: 0.9rem; background: var(--accent-soft); border-radius: 4px; padding: 10px 14px; margin: 12px 0 0; }
+.trap { font-size: 0.92rem; background: var(--warn-soft); color: var(--ink); border-left: 3px solid var(--warn); border-radius: 0 4px 4px 0; padding: 10px 14px; margin: 12px 0; }
+.trap b { color: var(--warn); }
+
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">COMP205 · Viva preparation · Digital Vinyl Store</div>
+  <h1>Viva Guide</h1>
+  <p class="lede">Each topic has the key words in simple English, a short program you can write from memory with its output, and the questions examiners usually ask. Read one topic a day and practise writing the code on paper.</p>
+  <nav class="chips" aria-label="Topics">
+    <a href="#how">How to answer</a>
+    <a href="#t1">1 · Classes</a>
+    <a href="#t2">2 · Constructors</a>
+    <a href="#t3">3 · Static</a>
+    <a href="#t4">4 · Inheritance</a>
+    <a href="#t5">5 · Polymorphism</a>
+    <a href="#t6">6 · Abstract</a>
+    <a href="#t7">7 · Collections</a>
+    <a href="#t8">8 · Exceptions</a>
+    <a href="#predict">Predict the output</a>
+  </nav>
+</header>
+
+<section id="how">
+  <h2>How to answer in the viva</h2>
+  <p>You get two questions from different topics, 5 marks each, in about 2 minutes. A good answer has three parts:</p>
+  <ol>
+    <li><b>Say it in one line.</b> "Encapsulation means keeping data private and giving access only through methods."</li>
+    <li><b>Show it in our project.</b> "In <code>Product.java</code>, <code>price</code> is private, and <code>setPrice()</code> rejects negative values." Then run <code>java -cp out Main 1</code>.</li>
+    <li><b>Write a tiny example</b> if they ask, and say what it prints.</li>
+  </ol>
+  <p>If you forget something, say what you do know and point to the code. Explaining the code calmly beats rushing.</p>
+  <div class="tbl"><table>
+    <tr><th>Command</th><th>What it does</th></tr>
+    <tr><td><code>javac -d out src/*.java</code></td><td>Compiles all files into the <code>out</code> folder</td></tr>
+    <tr><td><code>java -cp out Main</code></td><td>Opens the menu</td></tr>
+    <tr><td><code>java -cp out Main 5</code></td><td>Runs only topic 5</td></tr>
+  </table></div>
+</section>
+
+<!-- ======================= TOPIC 1 ======================= -->
+<section id="t1">
+  <h2><span class="n">Topic 1</span>Classes, Objects and Encapsulation</h2>
+  <p class="run">Run: <code>java -cp out Main 1</code> · Files: <code>Product.java</code>, <code>Main.java</code></p>
+  <dl class="terms">
+    <dt>Class</dt><dd>A blueprint. It says what data (fields) and actions (methods) a thing has. <code>VinylRecord</code> is a class.</dd>
+    <dt>Object</dt><dd>A real thing made from the class with <code>new</code>. Each object has its own values.</dd>
+    <dt>Reference</dt><dd>A variable that points to an object. Two references can point to the same object.</dd>
+    <dt>Encapsulation</dt><dd>Keep fields <code>private</code>. Allow access only through public getters and setters, so the class can check values.</dd>
+    <dt>private</dt><dd>Only inside the same class.</dd>
+    <dt>default (no keyword)</dt><dd>Anywhere in the same package.</dd>
+    <dt>protected</dt><dd>Same package, plus child classes.</dd>
+    <dt>public</dt><dd>Everywhere.</dd>
+  </dl>
+
+  <h3>Code to remember</h3>
+  <div class="codepair">
+<pre class="src"><span class="label">Java</span>class Book {
+    private int price;                    // private field
+
+    public int getPrice() { return price; }
+
+    public void setPrice(int p) {
+        if (p >= 0) price = p;            // setter checks the value
+    }
+}
+
+Book b1 = new Book();
+b1.setPrice(300);
+Book b2 = b1;            // same object, NOT a copy
+b2.setPrice(500);
+b1.setPrice(-10);        // ignored by the check
+System.out.println(b1.getPrice());</pre>
+<pre class="out"><span class="label">Output</span>500</pre>
+  </div>
+
+  <div class="toolbar"><h3>Likely questions</h3><button class="toggle" type="button">Show all answers</button></div>
+  <div class="qa">
+    <details><summary>What is the difference between a class and an object?</summary><div class="a"><p>A class is the blueprint, like the design of a house. An object is the actual house built from it. One class can make many objects.</p></div></details>
+    <details><summary>Why do we make fields private?</summary><div class="a"><p>So nobody can put wrong values directly. If <code>price</code> were public, anyone could write <code>price = -500</code>. With a setter we can reject it.</p></div></details>
+    <details><summary>What happens with <code>VinylRecord c = a;</code>?</summary><div class="a"><p>No new object is made. <code>c</code> and <code>a</code> point to the same object, so a change through <code>c</code> is seen through <code>a</code>. In our demo, <code>c.setStock(99)</code> makes <code>a.getStock()</code> print 99.</p></div></details>
+    <details><summary>If we pass an object to a method and change it there, does the change stay?</summary><div class="a"><p>Yes. The method gets a copy of the reference, but it points to the same object. Our <code>addOneCopy(b)</code> changes b's stock from 6 to 7.</p></div></details>
+    <details><summary>Is Java pass-by-value or pass-by-reference?</summary><div class="a"><p>Always pass-by-value. For objects, the value that is copied is the reference. So the method can change the object's fields, but it can not make the caller's variable point to a different object.</p></div></details>
+    <details><summary>What are the default values of fields?</summary><div class="a"><p><code>int</code> → 0, <code>double</code> → 0.0, <code>boolean</code> → false, <code>char</code> → '\u0000', and any object (like <code>String</code>) → <code>null</code>. Local variables have no default; you must give them a value.</p></div></details>
+  </div>
+  <p class="where"><b>In our project:</b> <code>Product</code> has <code>private String name</code> and <code>private double price</code>, <code>protected int stock</code>, and a package-private <code>category</code>. <code>setPrice()</code> throws <code>InvalidPriceException</code> for negative prices.</p>
+</section>
+
+<!-- ======================= TOPIC 2 ======================= -->
+<section id="t2">
+  <h2><span class="n">Topic 2</span>Constructors and Method Overloading</h2>
+  <p class="run">Run: <code>java -cp out Main 2</code> · Files: <code>VinylRecord.java</code>, <code>Track.java</code></p>
+  <dl class="terms">
+    <dt>Constructor</dt><dd>A special method with the same name as the class and no return type. It runs automatically when you write <code>new</code>.</dd>
+    <dt>Default constructor</dt><dd>If you write NO constructor, Java adds an empty one for you. <code>Track</code> has none, so Java adds <code>Track() { }</code>.</dd>
+    <dt>No-arg constructor</dt><dd>A constructor you write that takes no parameters.</dd>
+    <dt>Parameterized</dt><dd>A constructor that takes values, like <code>VinylRecord(name, artist, price, stock)</code>.</dd>
+    <dt>Copy constructor</dt><dd>Takes another object of the same class and copies its values into a new object.</dd>
+    <dt><code>this</code></dt><dd>Means "this current object". <code>this.price = price</code> sets the field from the parameter.</dd>
+    <dt><code>this(...)</code></dt><dd>Calls another constructor of the same class. It must be the first line.</dd>
+    <dt>Overloading</dt><dd>Same method name, different parameters (number, type or order). Java picks one at compile time.</dd>
+    <dt>Widening</dt><dd>If no exact match exists, Java automatically makes a small type bigger: byte → short → int → long → float → double, and char → int.</dd>
+  </dl>
+
+  <h3>Code to remember</h3>
+  <div class="codepair">
+<pre class="src"><span class="label">Java</span>class Box {
+    int w, h;
+
+    Box() {                       // no-arg
+        this(1, 1);               // calls the 2-arg constructor first
+        System.out.println("no-arg");
+    }
+    Box(int w, int h) {           // parameterized
+        this.w = w;
+        this.h = h;
+        System.out.println("two-arg");
+    }
+    Box(Box other) {              // copy constructor
+        this(other.w, other.h);
+    }
+}
+
+new Box();</pre>
+<pre class="out"><span class="label">Output</span>two-arg
+no-arg</pre>
+  </div>
+  <div class="codepair">
+<pre class="src"><span class="label">Java · overloading</span>static void show(int x)    { System.out.println("int " + x); }
+static void show(double x) { System.out.println("double " + x); }
+
+show(5);      // exact match: int
+show(5.5);    // exact match: double
+show('A');    // no show(char), so char widens to int</pre>
+<pre class="out"><span class="label">Output</span>int 5
+double 5.5
+int 65</pre>
+  </div>
+  <div class="trap"><b>Trap:</b> if you write any constructor yourself, Java does NOT add the default one. A class with only <code>Box(int w, int h)</code> can not be created with <code>new Box()</code>.</div>
+
+  <div class="toolbar"><h3>Likely questions</h3><button class="toggle" type="button">Show all answers</button></div>
+  <div class="qa">
+    <details><summary>How is a constructor different from a method?</summary><div class="a"><p>A constructor has the same name as the class, has no return type (not even void), and runs automatically with <code>new</code>. A method has any name, has a return type, and runs only when you call it.</p></div></details>
+    <details><summary>When does Java give a default constructor?</summary><div class="a"><p>Only when the class has no constructor at all. It sets fields to their default values (0, null, false).</p></div></details>
+    <details><summary>What is constructor chaining?</summary><div class="a"><p>One constructor calling another with <code>this(...)</code> in the same class, or the parent's with <code>super(...)</code>. In our <code>VinylRecord()</code>, the no-arg constructor calls <code>this("Untitled Album", "Unknown Artist", 0, 0)</code>.</p></div></details>
+    <details><summary>Can we use <code>this()</code> and <code>super()</code> in the same constructor?</summary><div class="a"><p>No. Both must be the first line, and only one thing can be first.</p></div></details>
+    <details><summary>Can two methods differ only by return type?</summary><div class="a"><p>No, that is a compile error. Overloaded methods must differ in their parameters.</p></div></details>
+    <details><summary>What is our overloading example?</summary><div class="a"><p><code>restock(int quantity)</code> and <code>restock(int quantity, String supplier)</code> in <code>VinylRecord</code>. Java picks one by the number of arguments.</p></div></details>
+    <details><summary>Why does <code>show('A')</code> print 65?</summary><div class="a"><p>There is no <code>show(char)</code>. Java widens the char to an int, and the character code of 'A' is 65.</p></div></details>
+  </div>
+</section>
+
+<!-- ======================= TOPIC 3 ======================= -->
+<section id="t3">
+  <h2><span class="n">Topic 3</span>Static Members and Nested Classes</h2>
+  <p class="run">Run: <code>java -cp out Main 3</code> · Files: <code>Product.java</code>, <code>Store.java</code></p>
+  <dl class="terms">
+    <dt>static variable</dt><dd>One copy for the whole class, shared by every object. <code>Product.productCount</code> counts all products.</dd>
+    <dt>instance variable</dt><dd>Each object has its own copy, like <code>name</code> and <code>price</code>.</dd>
+    <dt>static method</dt><dd>Called on the class: <code>Product.storeInfo()</code>. It can not use <code>this</code> or instance variables directly.</dd>
+    <dt>static block</dt><dd><code>static { ... }</code> runs only once, when the class is first loaded.</dd>
+    <dt>instance block</dt><dd><code>{ ... }</code> runs every time an object is made, just before the constructor body.</dd>
+    <dt>static nested class</dt><dd>A class inside a class, marked static. No outer object needed: <code>new Store.Receipt(...)</code>.</dd>
+    <dt>inner class</dt><dd>A non-static class inside a class. It needs an outer object: <code>store.new Cart()</code>. It can use the outer class's fields.</dd>
+    <dt>anonymous class</dt><dd>A class with no name, written and used in one place, usually to implement an interface.</dd>
+    <dt>Singleton</dt><dd>A class that allows only one object. Private constructor + static <code>getInstance()</code>.</dd>
+  </dl>
+
+  <h3>Code to remember</h3>
+  <div class="codepair">
+<pre class="src"><span class="label">Java · order of execution</span>class Counter {
+    static int count = 0;
+    static { System.out.println("static block"); }
+    { System.out.println("instance block"); }
+
+    Counter() {
+        count++;
+        System.out.println("constructor " + count);
+    }
+}
+
+new Counter();
+new Counter();</pre>
+<pre class="out"><span class="label">Output</span>static block
+instance block
+constructor 1
+instance block
+constructor 2</pre>
+  </div>
+  <div class="codepair">
+<pre class="src"><span class="label">Java · Singleton</span>class Store {
+    private static Store instance;
+    private Store() { }                  // nobody outside can call new Store()
+
+    public static Store getInstance() {
+        if (instance == null) instance = new Store();
+        return instance;
+    }
+}
+
+Store s1 = Store.getInstance();
+Store s2 = Store.getInstance();
+System.out.println(s1 == s2);</pre>
+<pre class="out"><span class="label">Output</span>true</pre>
+  </div>
+
+  <div class="toolbar"><h3>Likely questions</h3><button class="toggle" type="button">Show all answers</button></div>
+  <div class="qa">
+    <details><summary>What is the order: static block, instance block, constructor?</summary><div class="a"><p>The static block runs first and only once, when the class loads. Then for every <code>new</code>: the instance block, then the constructor body.</p></div></details>
+    <details><summary>Why can't a static method use instance variables?</summary><div class="a"><p>A static method belongs to the class and can run without any object. With no object, there is no <code>name</code> or <code>price</code> to use.</p></div></details>
+    <details><summary>Static nested class vs inner class?</summary><div class="a"><p>Static nested: no outer object needed, and it can only use the outer class's static members directly. Inner: needs an outer object (<code>store.new Cart()</code>) and can use all outer fields, even private ones. Our <code>Cart</code> prints <code>storeName</code>, a private field of <code>Store</code>.</p></div></details>
+    <details><summary>How do you make a Singleton?</summary><div class="a"><p>Three steps: a private constructor, a private static variable that holds the one object, and a public static <code>getInstance()</code> that creates the object the first time and returns the same one every time after.</p></div></details>
+    <details><summary>Where did we use an anonymous class?</summary><div class="a"><p>In topic 3: <code>Playable radio = new Playable() { public void play() {...} };</code> It implements the interface without making a new named class file.</p></div></details>
+    <details><summary>Can a static method be overridden?</summary><div class="a"><p>No. If a child writes a static method with the same name, it hides the parent's one. That is covered in Topic 5.</p></div></details>
+  </div>
+</section>
+
+<!-- ======================= TOPIC 4 ======================= -->
+<section id="t4">
+  <h2><span class="n">Topic 4</span>Inheritance</h2>
+  <p class="run">Run: <code>java -cp out Main 4</code> · Files: <code>VinylRecord.java</code>, <code>LimitedEdition.java</code>, <code>Cassette.java</code></p>
+  <dl class="terms">
+    <dt>Inheritance</dt><dd>A child class gets the fields and methods of a parent with <code>extends</code>. It is an "is-a" relation: a VinylRecord is a Product.</dd>
+    <dt>Single</dt><dd>One parent, one child: <code>VinylRecord extends Product</code>.</dd>
+    <dt>Multilevel</dt><dd>A chain: <code>LimitedEdition → VinylRecord → Product</code>.</dd>
+    <dt>Hierarchical</dt><dd>One parent, many children: <code>VinylRecord</code> and <code>Cassette</code> both extend <code>Product</code>.</dd>
+    <dt>Multiple (interfaces)</dt><dd>A class can not extend two classes, but it can implement many interfaces: <code>VinylRecord implements Playable, Discountable</code>.</dd>
+    <dt><code>super</code></dt><dd>Means the parent. <code>super(...)</code> calls the parent constructor; <code>super.play()</code> calls the parent's method.</dd>
+    <dt>final method</dt><dd>Children can use it but can not override it. Ours is <code>getStoreName()</code>.</dd>
+  </dl>
+
+  <h3>Code to remember</h3>
+  <div class="codepair">
+<pre class="src"><span class="label">Java · constructor order</span>class A { A() { System.out.println("A"); } }
+class B extends A { B() { System.out.println("B"); } }
+class C extends B { C() { System.out.println("C"); } }
+
+new C();</pre>
+<pre class="out"><span class="label">Output</span>A
+B
+C</pre>
+  </div>
+  <div class="codepair">
+<pre class="src"><span class="label">Java · super</span>class Animal {
+    void sound() { System.out.println("Some sound"); }
+}
+class Dog extends Animal {
+    void sound() {
+        super.sound();                 // parent's version first
+        System.out.println("Bark");
+    }
+}
+
+new Dog().sound();</pre>
+<pre class="out"><span class="label">Output</span>Some sound
+Bark</pre>
+  </div>
+  <div class="trap"><b>Trap:</b> if the child constructor does not call <code>super(...)</code>, Java secretly adds <code>super()</code>. If the parent has no no-arg constructor, that is a compile error.</div>
+
+  <div class="toolbar"><h3>Likely questions</h3><button class="toggle" type="button">Show all answers</button></div>
+  <div class="qa">
+    <details><summary>Why doesn't Java allow multiple inheritance with classes?</summary><div class="a"><p>If two parents had the same method, Java would not know which one to use. This is called the diamond problem. Interfaces avoid it, so a class can implement many.</p></div></details>
+    <details><summary>In what order do constructors run?</summary><div class="a"><p>Parent first, then child. Run topic 4: it prints Product, then VinylRecord, then LimitedEdition, because each constructor's first line is <code>super(...)</code>.</p></div></details>
+    <details><summary>Are private members inherited?</summary><div class="a"><p>They exist inside the child object, but the child can not use them directly. It uses the public getters instead. That is why <code>VinylRecord</code> calls <code>getName()</code> but uses <code>stock</code> directly, since stock is protected.</p></div></details>
+    <details><summary>Are constructors inherited?</summary><div class="a"><p>No. The child calls them with <code>super(...)</code>.</p></div></details>
+    <details><summary>What does <code>final</code> mean on a class, method and variable?</summary><div class="a"><p>A final class can not be extended. A final method can not be overridden. A final variable can not be changed after it is set.</p></div></details>
+    <details><summary>Show multilevel inheritance in our project.</summary><div class="a"><p><code>LimitedEdition extends VinylRecord</code>, and <code>VinylRecord extends Product</code>. So a LimitedEdition object can call <code>getName()</code> from Product and <code>restock()</code> from VinylRecord.</p></div></details>
+  </div>
+</section>
+
+<!-- ======================= TOPIC 5 ======================= -->
+<section id="t5">
+  <h2><span class="n">Topic 5</span>Polymorphism</h2>
+  <p class="run">Run: <code>java -cp out Main 5</code> · Files: <code>Main.java</code> (topic5)</p>
+  <dl class="terms">
+    <dt>Polymorphism</dt><dd>"Many forms". One method call can behave differently depending on the object.</dd>
+    <dt>Compile-time</dt><dd>Overloading. Java decides which method to call while compiling, from the arguments.</dd>
+    <dt>Runtime</dt><dd>Overriding. Java decides while running, from the actual object.</dd>
+    <dt>Overriding</dt><dd>A child writes the same method (same name and parameters) as the parent, with a new body.</dd>
+    <dt><code>@Override</code></dt><dd>Asks the compiler to check that you really are overriding. A typo becomes an error instead of a silent new method.</dd>
+    <dt>Upcasting</dt><dd><code>Product p = new VinylRecord(...)</code>: a parent reference holding a child object. Automatic.</dd>
+    <dt>Downcasting</dt><dd><code>VinylRecord v = (VinylRecord) p</code>: back to the child type. Needs a cast; check with <code>instanceof</code> first.</dd>
+  </dl>
+
+  <h3>The one rule to remember</h3>
+  <div class="tbl"><table>
+    <tr><th>With <code>Parent p = new Child();</code></th><th>Which one is used?</th><th>Decided by</th></tr>
+    <tr><td><code>p.method()</code> (instance, overridden)</td><td>Child's</td><td>Object type, at run time</td></tr>
+    <tr><td><code>p.variable</code></td><td>Parent's</td><td>Reference type</td></tr>
+    <tr><td><code>p.staticMethod()</code></td><td>Parent's (hiding)</td><td>Reference type</td></tr>
+    <tr><td><code>p.childOnlyMethod()</code></td><td>Compile error</td><td>Reference type has no such method</td></tr>
+  </table></div>
+
+  <h3>Code to remember</h3>
+  <div class="codepair">
+<pre class="src"><span class="label">Java</span>class Animal {
+    String name = "Animal";
+    void sound() { System.out.println("..."); }
+    static void info() { System.out.println("Animal info"); }
+}
+class Dog extends Animal {
+    String name = "Dog";
+    @Override
+    void sound() { System.out.println("Bark"); }
+    static void info() { System.out.println("Dog info"); }
+}
+
+Animal a = new Dog();          // upcasting
+a.sound();
+System.out.println(a.name);
+a.info();</pre>
+<pre class="out"><span class="label">Output</span>Bark
+Animal
+Animal info</pre>
+  </div>
+
+  <div class="toolbar"><h3>Likely questions</h3><button class="toggle" type="button">Show all answers</button></div>
+  <div class="qa">
+    <details><summary>Overloading vs overriding?</summary><div class="a"><p>Overloading: same name, different parameters, in the same class, decided at compile time. Overriding: same name and same parameters, in parent and child, decided at run time.</p></div></details>
+    <details><summary>What is runtime polymorphism in our project?</summary><div class="a"><p>In topic 5 we loop over <code>Product[] shelf</code> and call <code>showDetails()</code>. The same line prints "Vinyl", "Cassette" or "Limited Edition Vinyl", because each object uses its own <code>getType()</code>.</p></div></details>
+    <details><summary>Why does <code>p.category</code> print "Product" but <code>p.getType()</code> print "Vinyl"?</summary><div class="a"><p>Variables are not overridden. Java uses the reference type (Product) for variables. Methods are overridden, so Java uses the real object (VinylRecord).</p></div></details>
+    <details><summary>When do we get ClassCastException?</summary><div class="a"><p>When we downcast to the wrong type. <code>p</code> is really a VinylRecord, so <code>(Cassette) p</code> fails at run time. Checking with <code>instanceof</code> first prevents this.</p></div></details>
+    <details><summary>Which methods can not be overridden?</summary><div class="a"><p>static methods (they are hidden instead), final methods, and private methods (the child can't see them). Constructors also can't be overridden.</p></div></details>
+    <details><summary>Can an overriding method make access weaker, for example public to private?</summary><div class="a"><p>No. It can keep the same access or make it wider, but never narrower.</p></div></details>
+  </div>
+</section>
+
+<!-- ======================= TOPIC 6 ======================= -->
+<section id="t6">
+  <h2><span class="n">Topic 6</span>Abstract Classes and Interfaces</h2>
+  <p class="run">Run: <code>java -cp out Main 6</code> · Files: <code>Product.java</code>, <code>Playable.java</code>, <code>Discountable.java</code>, <code>Collectible.java</code></p>
+  <dl class="terms">
+    <dt>Abstract class</dt><dd>A class you can not create objects from. It can have abstract methods (no body), normal methods, variables and constructors.</dd>
+    <dt>Abstract method</dt><dd>Only the signature, no body: <code>public abstract String getType();</code>. Every child must write it, or be abstract too.</dd>
+    <dt>Interface</dt><dd>A list of methods a class promises to have. Methods are public and abstract unless marked <code>default</code> or <code>static</code>. Variables are always <code>public static final</code>.</dd>
+    <dt>default method</dt><dd>An interface method with a body (Java 8+). Classes get it for free. Our <code>Playable.stop()</code>.</dd>
+    <dt>Interface inheritance</dt><dd>An interface can extend another: <code>Collectible extends Discountable</code>.</dd>
+  </dl>
+
+  <div class="tbl"><table>
+    <tr><th></th><th>Abstract class</th><th>Interface</th></tr>
+    <tr><td>Keyword</td><td><code>extends</code> (only one)</td><td><code>implements</code> (many allowed)</td></tr>
+    <tr><td>Methods</td><td>Abstract and normal</td><td>Abstract, plus default and static</td></tr>
+    <tr><td>Variables</td><td>Any kind</td><td>Only <code>public static final</code> constants</td></tr>
+    <tr><td>Constructor</td><td>Yes</td><td>No</td></tr>
+    <tr><td>Use it for</td><td>Shared code for close relatives (all Products)</td><td>An ability any class can have (Playable)</td></tr>
+  </table></div>
+
+  <h3>Code to remember</h3>
+  <div class="codepair">
+<pre class="src"><span class="label">Java</span>abstract class Shape {
+    abstract double area();              // no body
+    void print() {                       // normal method
+        System.out.println("Area = " + area());
+    }
+}
+class Circle extends Shape {
+    double r;
+    Circle(double r) { this.r = r; }
+    double area() { return 3.14 * r * r; }
+}
+class Square extends Shape {
+    double s;
+    Square(double s) { this.s = s; }
+    double area() { return s * s; }
+}
+
+Shape a = new Circle(1);
+Shape b = new Square(2);
+a.print();
+b.print();
+// Shape x = new Shape();   ERROR: Shape is abstract</pre>
+<pre class="out"><span class="label">Output</span>Area = 3.14
+Area = 4.0</pre>
+  </div>
+  <div class="codepair">
+<pre class="src"><span class="label">Java · interface with default method</span>interface Playable {
+    void play();                                   // must be written
+    default void stop() { System.out.println("Stopped"); }
+}
+class Radio implements Playable {
+    public void play() { System.out.println("Radio on"); }
+}
+
+Playable p = new Radio();
+p.play();
+p.stop();</pre>
+<pre class="out"><span class="label">Output</span>Radio on
+Stopped</pre>
+  </div>
+  <div class="trap"><b>Trap:</b> a class implementing an interface method must mark it <code>public</code>. Writing just <code>void play()</code> in <code>Radio</code> is a compile error, because interface methods are public.</div>
+
+  <div class="toolbar"><h3>Likely questions</h3><button class="toggle" type="button">Show all answers</button></div>
+  <div class="qa">
+    <details><summary>Why can an abstract class have a constructor if we can't create it?</summary><div class="a"><p>The child calls it with <code>super(...)</code> to set up the shared fields. Our <code>Product</code> constructor sets name, price and stock for every child.</p></div></details>
+    <details><summary>Can an abstract class have no abstract methods?</summary><div class="a"><p>Yes. Marking it abstract simply stops people from creating objects of it.</p></div></details>
+    <details><summary>What if a child does not write the abstract method?</summary><div class="a"><p>Compile error, unless the child is also declared abstract.</p></div></details>
+    <details><summary>Why did we make Product abstract?</summary><div class="a"><p>The shop never sells a plain "product". It sells a vinyl or a cassette. <code>Product</code> only holds the shared parts, and <code>getType()</code> has no sensible answer at that level.</p></div></details>
+    <details><summary>What is a "common workflow" in an abstract class?</summary><div class="a"><p>A normal method that does the same steps for everyone and calls an abstract method for the part that differs. Our <code>showDetails()</code> is written once in Product and calls <code>getType()</code>, which each child fills in.</p></div></details>
+    <details><summary>Show an interface reference in our project.</summary><div class="a"><p><code>Playable[] players = { vinyl, cassette }</code>, then <code>pl.play()</code> plays each one its own way, and <code>pl.stop()</code> uses the default method.</p></div></details>
+  </div>
+</section>
+
+<!-- ======================= TOPIC 7 ======================= -->
+<section id="t7">
+  <h2><span class="n">Topic 7</span>Arrays and Collections</h2>
+  <p class="run">Run: <code>java -cp out Main 7</code> · Files: <code>Main.java</code> (topic7), <code>Store.java</code></p>
+  <dl class="terms">
+    <dt>Array</dt><dd>Fixed size, set when created: <code>new Track[3]</code>. That creates 3 empty (null) slots, not 3 objects.</dd>
+    <dt>ArrayList</dt><dd>A list that grows by itself. Fast for <code>get(index)</code>.</dd>
+    <dt>LinkedList</dt><dd>A list of linked nodes. Fast to add or remove at the two ends, so it works well as a queue.</dd>
+    <dt>Generics</dt><dd><code>ArrayList&lt;String&gt;</code> allows only Strings. Mistakes are caught at compile time, and no casting is needed.</dd>
+    <dt>Iterator</dt><dd>Walks forward with <code>hasNext()</code> and <code>next()</code>. <code>remove()</code> deletes safely while walking.</dd>
+    <dt>ListIterator</dt><dd>Walks both ways (<code>hasPrevious()</code>, <code>previous()</code>) and can <code>set()</code> and <code>add()</code>.</dd>
+    <dt>Queue</dt><dd>First in, first out. <code>offer()</code> joins the back, <code>peek()</code> looks at the front, <code>poll()</code> takes from the front.</dd>
+  </dl>
+
+  <h3>Code to remember</h3>
+  <div class="codepair">
+<pre class="src"><span class="label">Java · ArrayList</span>ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;();
+list.add("A");
+list.add("B");
+list.add("C");
+list.add(1, "X");          // insert at index 1
+list.set(0, "Z");          // replace index 0
+list.remove("B");
+System.out.println(list);
+System.out.println(list.indexOf("C") + " " + list.size());
+System.out.println(list.subList(0, 2));   // index 2 NOT included</pre>
+<pre class="out"><span class="label">Output</span>[Z, X, C]
+2 3
+[Z, X]</pre>
+  </div>
+  <div class="codepair">
+<pre class="src"><span class="label">Java · queue and iterator</span>LinkedList&lt;String&gt; q = new LinkedList&lt;&gt;();
+q.offer("o1");
+q.offer("o2");
+q.offer("o3");
+System.out.println(q.peek());   // look only
+System.out.println(q.poll());   // remove from front
+System.out.println(q);
+
+Iterator&lt;String&gt; it = q.iterator();
+while (it.hasNext()) {
+    if (it.next().equals("o2")) it.remove();
+}
+System.out.println(q);</pre>
+<pre class="out"><span class="label">Output</span>o1
+o1
+[o2, o3]
+[o3]</pre>
+  </div>
+  <div class="trap"><b>Trap:</b> calling <code>list.remove(...)</code> inside a for-each loop over the same list throws <code>ConcurrentModificationException</code>. Use <code>Iterator.remove()</code> instead.</div>
+
+  <div class="toolbar"><h3>Likely questions</h3><button class="toggle" type="button">Show all answers</button></div>
+  <div class="qa">
+    <details><summary>Array vs ArrayList?</summary><div class="a"><p>An array has a fixed size and can hold primitives like <code>int</code>. An ArrayList grows by itself and holds only objects (it uses <code>Integer</code>, not <code>int</code>).</p></div></details>
+    <details><summary>ArrayList vs LinkedList?</summary><div class="a"><p>ArrayList is faster for reading by index. LinkedList is faster for adding and removing at the start or end, which is why we used it for the order queue.</p></div></details>
+    <details><summary><code>peek()</code> vs <code>poll()</code>?</summary><div class="a"><p>Both return the front item. <code>peek()</code> leaves it in the queue; <code>poll()</code> removes it. On an empty queue both return null.</p></div></details>
+    <details><summary>What is the benefit of generics?</summary><div class="a"><p>Type safety. <code>albums.add(25)</code> on an <code>ArrayList&lt;String&gt;</code> fails at compile time, and we never need to cast when we take items out.</p></div></details>
+    <details><summary>Iterator vs ListIterator?</summary><div class="a"><p>Iterator works on any collection, goes forward only, and can remove. ListIterator works on lists, goes forward and backward, and can also <code>set()</code> and <code>add()</code>.</p></div></details>
+    <details><summary>If two array variables point to one array and we change an element, what happens?</summary><div class="a"><p>Both see the change, because there is only one array. In topic 7, changing <code>sameArray[0].title</code> also changes <code>tracks[0].title</code>.</p></div></details>
+  </div>
+</section>
+
+<!-- ======================= TOPIC 8 ======================= -->
+<section id="t8">
+  <h2><span class="n">Topic 8</span>Exception Handling</h2>
+  <p class="run">Run: <code>java -cp out Main 8</code> · Files: <code>OutOfStockException.java</code>, <code>InvalidPriceException.java</code>, <code>Main.java</code> (topic8)</p>
+  <dl class="terms">
+    <dt>Exception</dt><dd>An error while the program runs that stops the normal flow, like dividing by zero.</dd>
+    <dt>Hierarchy</dt><dd><code>Throwable</code> → <code>Error</code> (serious, don't catch) and <code>Exception</code> → <code>RuntimeException</code> (unchecked) and others (checked).</dd>
+    <dt>Checked</dt><dd>Java forces you to handle it at compile time. Example: <code>IOException</code>, and our <code>OutOfStockException</code>.</dd>
+    <dt>Unchecked</dt><dd>Extends <code>RuntimeException</code>; not forced. Examples: <code>ArithmeticException</code>, <code>NullPointerException</code>, our <code>InvalidPriceException</code>.</dd>
+    <dt>try / catch / finally</dt><dd>try holds risky code; catch handles the problem; finally always runs, error or not.</dd>
+    <dt><code>throw</code></dt><dd>Actually throws one exception object: <code>throw new OutOfStockException("...")</code>.</dd>
+    <dt><code>throws</code></dt><dd>Written on the method to warn callers: <code>void sell(int q) throws OutOfStockException</code>.</dd>
+    <dt>Propagation</dt><dd>If a method doesn't catch an exception, it goes up to the method that called it, and so on.</dd>
+  </dl>
+
+  <h3>Code to remember</h3>
+  <div class="codepair">
+<pre class="src"><span class="label">Java · custom checked exception</span>class OutOfStockException extends Exception {
+    OutOfStockException(String msg) { super(msg); }
+}
+
+static void sell(int qty, int stock) throws OutOfStockException {
+    if (qty > stock) throw new OutOfStockException("Only " + stock + " left");
+    System.out.println("Sold " + qty);
+}
+
+try {
+    sell(10, 3);
+    System.out.println("not printed");
+} catch (OutOfStockException e) {
+    System.out.println("Error: " + e.getMessage());
+} finally {
+    System.out.println("finally");
+}</pre>
+<pre class="out"><span class="label">Output</span>Error: Only 3 left
+finally</pre>
+  </div>
+  <div class="codepair">
+<pre class="src"><span class="label">Java · return and finally</span>static int test() {
+    try {
+        return 1;
+    } finally {
+        System.out.println("finally runs");
+    }
+}
+
+System.out.println(test());</pre>
+<pre class="out"><span class="label">Output</span>finally runs
+1</pre>
+  </div>
+  <div class="trap"><b>Trap:</b> in multiple catch blocks, put the child exception before the parent. <code>catch (Exception e)</code> followed by <code>catch (ArithmeticException e)</code> is a compile error, because the second can never be reached.</div>
+
+  <div class="toolbar"><h3>Likely questions</h3><button class="toggle" type="button">Show all answers</button></div>
+  <div class="qa">
+    <details><summary>Checked vs unchecked?</summary><div class="a"><p>Checked exceptions extend <code>Exception</code>, and the compiler forces you to catch them or write <code>throws</code>. Unchecked ones extend <code>RuntimeException</code> and are not forced. Ours: <code>OutOfStockException</code> is checked, <code>InvalidPriceException</code> is unchecked.</p></div></details>
+    <details><summary><code>throw</code> vs <code>throws</code>?</summary><div class="a"><p><code>throw</code> is a statement inside a method that throws one exception. <code>throws</code> is in the method heading and lists the exceptions it might throw.</p></div></details>
+    <details><summary>Does finally always run?</summary><div class="a"><p>Yes: after normal flow, after a catch, and even after a <code>return</code> in try. The only common exception is <code>System.exit()</code>.</p></div></details>
+    <details><summary>What if both try and finally have a return?</summary><div class="a"><p>The value from finally wins and replaces the one from try. This is why returning from finally is bad practice.</p></div></details>
+    <details><summary>What happens if an exception is thrown inside a catch block?</summary><div class="a"><p>The finally of that try still runs, and the new exception goes out to an outer try/catch. Our topic 8 nested example shows: inner catch, inner finally, outer catch.</p></div></details>
+    <details><summary>Explain propagation with our example.</summary><div class="a"><p><code>methodC</code> reads index 5 of a 2-item array and throws. methodC has no catch, so it goes to <code>methodB</code>. methodB has none either, so it goes to <code>methodA</code>, which catches it.</p></div></details>
+    <details><summary>How do you make your own exception?</summary><div class="a"><p>Make a class that extends <code>Exception</code> (checked) or <code>RuntimeException</code> (unchecked), and pass the message to <code>super(message)</code>.</p></div></details>
+  </div>
+</section>
+
+<section id="predict">
+  <h2>Predict the output</h2>
+  <p>Examiners like asking "what does this print?". Cover the answer, say yours out loud, then check.</p>
+  <div class="toolbar"><h3>Eight quick ones</h3><button class="toggle" type="button">Show all answers</button></div>
+  <div class="qa">
+    <details><summary><code>int[] a = {1, 2, 3}; int[] b = a; b[0] = 9; System.out.println(a[0]);</code></summary><div class="a"><p><b>9</b>. <code>a</code> and <code>b</code> are the same array.</p></div></details>
+    <details><summary><code>String s; </code> as a field, then <code>System.out.println(s);</code></summary><div class="a"><p><b>null</b>. The default value for an object field is null.</p></div></details>
+    <details><summary><code>static void f(long x)</code> and <code>static void f(double x)</code>. What does <code>f(5)</code> call?</summary><div class="a"><p><b>f(long)</b>. int → long is the closest widening.</p></div></details>
+    <details><summary><code>Parent p = new Child();</code> Both have <code>int x</code> (Parent 10, Child 20). <code>System.out.println(p.x);</code></summary><div class="a"><p><b>10</b>. Variables follow the reference type.</p></div></details>
+    <details><summary>Same <code>p</code>, both have <code>show()</code>, Child overrides it to print "Child". <code>p.show();</code></summary><div class="a"><p><b>Child</b>. Overridden methods follow the object type.</p></div></details>
+    <details><summary><code>try { System.out.println(10/0); } catch (ArithmeticException e) { System.out.println("A"); } finally { System.out.println("F"); }</code></summary><div class="a"><p><b>A</b> then <b>F</b>.</p></div></details>
+    <details><summary><code>LinkedList&lt;Integer&gt; q = new LinkedList&lt;&gt;(); q.offer(1); q.offer(2); q.poll(); System.out.println(q.peek());</code></summary><div class="a"><p><b>2</b>. poll removed 1, and peek shows the new front.</p></div></details>
+    <details><summary>Class with <code>static { print "S" }</code>, <code>{ print "I" }</code> and a constructor that prints "C". Two <code>new</code> calls.</summary><div class="a"><p><b>S I C I C</b>. The static block runs once; the instance block and constructor run for each object.</p></div></details>
+  </div>
+</section>
+
+</div>
+
+<script>
+document.querySelectorAll("button.toggle").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    var block = btn.closest(".toolbar").nextElementSibling;
+    var items = block.querySelectorAll("details");
+    var anyClosed = Array.prototype.some.call(items, function (d) { return !d.open; });
+    items.forEach(function (d) { d.open = anyClosed; });
+    btn.textContent = anyClosed ? "Hide all answers" : "Show all answers";
+  });
+});
+</script>

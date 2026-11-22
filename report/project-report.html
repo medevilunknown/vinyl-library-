@@ -1,0 +1,347 @@
+<title>Digital Vinyl Store Report</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single readable column like a lab report; diagrams break out wider; label-sleeve circle as the one motif */
+:root {
+  --bg: #f6f7f9;
+  --paper: #ffffff;
+  --ink: #17191f;
+  --muted: #5b6170;
+  --rule: #dfe2e8;
+  --accent: #1d4f8c;
+  --accent-soft: #e6eef8;
+  --ok: #1f7a4d;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111318; --paper: #181b22; --ink: #e8eaf0; --muted: #9aa1b2;
+    --rule: #2b303b; --accent: #7fb0ee; --accent-soft: #1c2a3d; --ok: #5cc493;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111318; --paper: #181b22; --ink: #e8eaf0; --muted: #9aa1b2;
+  --rule: #2b303b; --accent: #7fb0ee; --accent-soft: #1c2a3d; --ok: #5cc493;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+}
+.wrap { max-width: 900px; margin: 0 auto; display: grid; gap: 28px; }
+section, header.cover {
+  background: var(--paper); border: 1px solid var(--rule); border-radius: 6px;
+  padding: clamp(20px, 4vw, 40px); min-width: 0;
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 2.8rem); }
+h2 { font-size: 1.5rem; margin-bottom: 14px; display: flex; gap: 12px; align-items: baseline; }
+h2 .n { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); font-weight: 500; }
+h3 { font-size: 1.1rem; margin: 22px 0 8px; }
+p, li { max-width: 68ch; }
+p { margin: 0 0 12px; }
+ul, ol { margin: 0 0 12px; padding-left: 1.3em; }
+code, .mono { font-family: var(--font-mono); font-size: 0.88em; }
+code { background: var(--accent-soft); padding: 1px 5px; border-radius: 3px; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+/* Cover */
+.cover { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
+.cover .sub { color: var(--muted); font-size: 1.1rem; margin-top: 8px; }
+.disc {
+  width: 132px; height: 132px; border-radius: 50%; flex: none;
+  background:
+    radial-gradient(circle, var(--paper) 0 5px, var(--accent) 6px 30px, transparent 31px),
+    repeating-radial-gradient(circle, var(--ink) 0 2px, color-mix(in srgb, var(--ink) 82%, var(--paper)) 2px 4px);
+}
+.meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px 24px; margin-top: 22px; grid-column: 1 / -1; }
+.meta div { border-top: 1px solid var(--rule); padding-top: 8px; }
+.meta b { display: block; font-weight: 600; }
+.meta span { color: var(--muted); font-size: 0.92rem; }
+.team { grid-column: 1 / -1; }
+.team table td:first-child { width: 2.5em; color: var(--muted); }
+
+/* Tables */
+.tbl { overflow-x: auto; margin: 6px 0 12px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.93rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Diagrams */
+.diagram { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; padding: 16px; background: var(--bg); margin: 8px 0 8px; }
+.diagram pre.mermaid { margin: 0; background: transparent; }
+.caption { font-size: 0.85rem; color: var(--muted); margin-bottom: 16px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 0.88rem; color: var(--muted); }
+.legend code { color: var(--ink); }
+
+pre.code {
+  font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.5;
+  background: var(--bg); border: 1px solid var(--rule); border-radius: 4px;
+  padding: 14px 16px; overflow-x: auto; margin: 6px 0 14px;
+}
+.pill { display: inline-block; font-family: var(--font-mono); font-size: 0.75rem; padding: 1px 8px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
+.steps { counter-reset: s; list-style: none; padding: 0; display: grid; gap: 10px; }
+.steps li { display: grid; grid-template-columns: 4.2em 1fr; gap: 12px; max-width: none; }
+.steps li .t { font-family: var(--font-mono); font-size: 0.82rem; color: var(--accent); padding-top: 2px; }
+.steps li > div { min-width: 0; }
+
+@media (max-width: 560px) {
+  .cover { grid-template-columns: 1fr; }
+  .disc { width: 96px; height: 96px; order: -1; }
+}
+</style>
+<div class="wrap">
+
+<header class="cover">
+  <div>
+    <div class="eyebrow">COMP205 · Object-Oriented Programming · Final Project Report</div>
+    <h1>Digital Vinyl Store</h1>
+    <p class="sub">A Java console program for a small record shop. It sells vinyl records, numbered limited editions and cassettes, and shows each syllabus topic as its own menu option.</p>
+  </div>
+  <div class="disc" role="img" aria-label="Vinyl record illustration"></div>
+  <div class="meta">
+    <div><b>Language</b><span>Java 8 or newer (tested on Java 17)</span></div>
+    <div><b>Libraries</b><span>Only java.util (ArrayList, LinkedList, Iterator, Scanner)</span></div>
+    <div><b>Size</b><span>12 classes and interfaces in <span class="mono">src/</span></span></div>
+    <div><b>Source</b><span class="mono">github.com/medevilunknown/vinyl-library-</span></div>
+  </div>
+  <div class="team">
+    <h3>Team</h3>
+    <div class="tbl"><table>
+      <tr><th>#</th><th>Name</th><th>Roll no.</th><th>Contribution</th></tr>
+      <tr><td>1</td><td>[Member name]</td><td>[Roll no.]</td><td>[e.g. Product, VinylRecord, Topics 1–2]</td></tr>
+      <tr><td>2</td><td>[Member name]</td><td>[Roll no.]</td><td>[e.g. Inheritance, interfaces, Topics 3–6]</td></tr>
+      <tr><td>3</td><td>[Member name]</td><td>[Roll no.]</td><td>[e.g. Store, collections, exceptions, Topics 7–8]</td></tr>
+    </table></div>
+  </div>
+</header>
+
+<section>
+  <h2><span class="n">1</span>Problem statement</h2>
+  <p>A small record shop sells three kinds of items: vinyl records, numbered limited-edition vinyls and cassettes. Every item has a name, a price and a stock count. The shop needs to add items, search for them, restock them, sell them, play a preview and give discounts.</p>
+  <p>Wrong data must be stopped. A price can not be negative, stock can not go below zero, and a sale can not ask for more copies than the shop has. When that happens, the program throws an exception with a clear message and the stored values stay the same.</p>
+  <h3>How the program is organised</h3>
+  <p>When it starts, <code>Main</code> shows a menu with eight topics, one for each part of the syllabus. Each topic runs a short demonstration that uses the store's classes and prints labelled results, so any team member can run one topic and explain the code behind it.</p>
+</section>
+
+<section>
+  <h2><span class="n">2</span>UML class diagram</h2>
+  <p><code>Product</code> is an abstract class that holds what every item shares. <code>VinylRecord</code> and <code>Cassette</code> extend it, and <code>LimitedEdition</code> extends <code>VinylRecord</code>. Three interfaces add abilities: <code>Playable</code>, <code>Discountable</code>, and <code>Collectible</code>, which extends <code>Discountable</code>. <code>Store</code> is a Singleton that holds the product list.</p>
+  <div class="legend"><span><code>-</code> private</span><span><code>#</code> protected</span><span><code>~</code> package-private</span><span><code>+</code> public</span><span><code>$</code> static</span><span><code>*</code> abstract</span><span><code>&lt;|--</code> extends</span><span><code>..|&gt;</code> implements</span></div>
+  <div class="diagram"><pre class="mermaid">
+classDiagram
+  direction TB
+  class Product {
+    &lt;&lt;abstract&gt;&gt;
+    ~int productCount$
+    ~boolean showSteps$
+    -String name
+    -double price
+    #int stock
+    ~String category
+    +Product(name, price, stock)
+    +getType()* String
+    +showDetails() void
+    +getStoreName() String
+    +storeInfo()$ void
+    +sell(int quantity) void
+    +getName() String
+    +setName(String) void
+    +getPrice() double
+    +setPrice(double) void
+    +getStock() int
+    +setStock(int) void
+  }
+  class VinylRecord {
+    -String artist
+    ~String category
+    +VinylRecord()
+    +VinylRecord(name, artist, price, stock)
+    +VinylRecord(VinylRecord other)
+    +restock(int) void
+    +restock(int, String) void
+    +getType() String
+    +showDetails() void
+    +play() void
+    +applyDiscount(double) double
+    +storeInfo()$ void
+    +cleanRecord() void
+  }
+  class LimitedEdition {
+    -int serialNumber
+    +LimitedEdition(name, artist, price, stock, serial)
+    +getType() String
+    +play() void
+    +applyDiscount(double) double
+    +getCertificate() String
+  }
+  class Cassette {
+    +Cassette(name, price, stock)
+    +getType() String
+    +play() void
+  }
+  class Playable {
+    &lt;&lt;interface&gt;&gt;
+    +play()* void
+    +stop() void
+  }
+  class Discountable {
+    &lt;&lt;interface&gt;&gt;
+    +applyDiscount(double)* double
+  }
+  class Collectible {
+    &lt;&lt;interface&gt;&gt;
+    +getCertificate()* String
+  }
+  class Store {
+    -Store instance$
+    -String storeName
+    -ArrayList~Product~ products
+    -Store()
+    +getInstance()$ Store
+    +addProduct(Product) void
+    +getProducts() ArrayList~Product~
+    +findByName(String) Product
+  }
+  class Receipt {
+    &lt;&lt;static nested&gt;&gt;
+    -String item
+    -double amount
+    +print() void
+  }
+  class Cart {
+    &lt;&lt;inner&gt;&gt;
+    -ArrayList~Product~ items
+    +add(Product) void
+    +total() double
+  }
+  class Track {
+    ~String title
+    ~int seconds
+    ~getLength() String
+  }
+  class OutOfStockException {
+    &lt;&lt;checked&gt;&gt;
+  }
+  class InvalidPriceException {
+    &lt;&lt;unchecked&gt;&gt;
+  }
+  Product &lt;|-- VinylRecord
+  Product &lt;|-- Cassette
+  VinylRecord &lt;|-- LimitedEdition
+  VinylRecord ..|&gt; Playable
+  VinylRecord ..|&gt; Discountable
+  Cassette ..|&gt; Playable
+  LimitedEdition ..|&gt; Collectible
+  Discountable &lt;|-- Collectible
+  Store "1" o-- "*" Product : products
+  Store *-- Receipt
+  Store *-- Cart
+  Cart o-- "*" Product : items
+  Product ..&gt; OutOfStockException : throws
+  Product ..&gt; InvalidPriceException : throws
+  </pre></div>
+  <p class="caption">Figure 1. Class diagram. <code>Track</code> has no constructor of its own, so Java gives it the default one. <code>OutOfStockException</code> extends <code>Exception</code> and <code>InvalidPriceException</code> extends <code>RuntimeException</code>.</p>
+
+  <h3>What each class does</h3>
+  <div class="tbl"><table>
+    <tr><th>Class / interface</th><th>Kind</th><th>Job</th></tr>
+    <tr><td><b>Product</b></td><td>abstract class</td><td>Shared name, price and stock with checked setters; counts every product; <code>sell()</code> throws when stock is too low.</td></tr>
+    <tr><td><b>VinylRecord</b></td><td>class</td><td>Adds the artist. Has three constructors and two <code>restock()</code> methods. Can be played and discounted.</td></tr>
+    <tr><td><b>LimitedEdition</b></td><td>class</td><td>A numbered vinyl with a certificate. Discounts are capped at 5%.</td></tr>
+    <tr><td><b>Cassette</b></td><td>class</td><td>A tape that plays on a cassette deck. Uses the default <code>stop()</code>.</td></tr>
+    <tr><td><b>Playable</b></td><td>interface</td><td><code>play()</code> must be written; <code>stop()</code> is a default method.</td></tr>
+    <tr><td><b>Discountable</b>, <b>Collectible</b></td><td>interfaces</td><td>Discount price; certificate for collectors' items.</td></tr>
+    <tr><td><b>Store</b></td><td>Singleton class</td><td>The one shop. Holds <code>ArrayList&lt;Product&gt;</code> and searches it by name.</td></tr>
+    <tr><td><b>Store.Receipt</b>, <b>Store.Cart</b></td><td>nested classes</td><td>Receipt needs no Store object. Cart is an inner class that uses the Store's name.</td></tr>
+    <tr><td><b>Track</b></td><td>class</td><td>One song. Used for the default constructor and the array of objects.</td></tr>
+    <tr><td><b>Main</b></td><td>class</td><td>Menu plus <code>topic1()</code> to <code>topic8()</code>.</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="n">3</span>Behaviour</h2>
+  <h3>Sequence: selling a record</h3>
+  <p>This is the flow in Topic 8, where the shop has 3 copies of Random Access Memories.</p>
+  <div class="diagram"><pre class="mermaid">
+sequenceDiagram
+  participant M as Main.topic8()
+  participant V as ram : VinylRecord
+  M->>V: sell(2)
+  V->>V: 2 &lt;= stock (3), so stock = 1
+  V-->>M: prints "Sold 2 ... Stock left: 1"
+  Note over M: finally block runs
+  M->>V: sell(10)
+  V->>V: 10 &gt; stock (1)
+  V--xM: throw OutOfStockException
+  M->>M: catch prints the message
+  Note over M: finally block runs
+  </pre></div>
+  <p class="caption">Figure 2. The first sale succeeds. The second throws a checked exception, which <code>Main</code> catches. The <code>finally</code> block runs both times.</p>
+
+  <h3>Object creation order</h3>
+  <p>Creating <code>new LimitedEdition(...)</code> builds the object from the top parent down.</p>
+  <div class="diagram"><pre class="mermaid">
+flowchart LR
+  A["static block<br/>(once, when Product loads)"] --> B["instance block<br/>of Product"]
+  B --> C["Product<br/>constructor"]
+  C --> D["VinylRecord<br/>constructor"]
+  D --> E["LimitedEdition<br/>constructor"]
+  </pre></div>
+  <p class="caption">Figure 3. Each constructor first calls <code>super(...)</code>, so the parent's part is always ready before the child's part.</p>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Syllabus coverage</h2>
+  <p>Every topic in the rubric is covered. Run a topic with <code>java -cp out Main &lt;number&gt;</code>.</p>
+  <div class="tbl"><table>
+    <tr><th>Menu</th><th>Syllabus topic</th><th>What the demo shows</th></tr>
+    <tr><td class="num"><span class="pill">1</span></td><td>Classes, Objects, Encapsulation</td><td>Two objects; private fields with getters and setters; a setter rejecting −500; two references to one object; reassignment; passing an object to a method.</td></tr>
+    <tr><td class="num"><span class="pill">2</span></td><td>Constructors, Overloading</td><td>Default (<code>Track</code>), no-arg, parameterized and copy constructors; <code>this(...)</code> chaining; <code>restock(int)</code> and <code>restock(int, String)</code>; <code>show()</code> picked by type and count; <code>char → int</code> and <code>int → long</code> widening.</td></tr>
+    <tr><td class="num"><span class="pill">3</span></td><td>Static, Nested Classes</td><td>Shared <code>productCount</code>; static and instance methods; static block, then instance block, then constructor; <code>Store.Receipt</code>; Singleton <code>s1 == s2</code>; <code>s1.new Cart()</code>; an anonymous <code>Playable</code>.</td></tr>
+    <tr><td class="num"><span class="pill">4</span></td><td>Inheritance</td><td>Single, multilevel and hierarchical inheritance; two interfaces on one class; parent-to-child constructor order; <code>super</code>; <code>protected stock</code>; <code>final getStoreName()</code>.</td></tr>
+    <tr><td class="num"><span class="pill">5</span></td><td>Polymorphism</td><td>Upcasting; a <code>Product[]</code> loop; <code>p.category</code> vs <code>p.getType()</code>; downcasting with <code>instanceof</code>; <code>ClassCastException</code>; static hiding vs overriding; overloading and overriding together.</td></tr>
+    <tr><td class="num"><span class="pill">6</span></td><td>Abstract Classes, Interfaces</td><td>Abstract <code>getType()</code> written by each child; concrete <code>showDetails()</code>; <code>Playable</code> references; default <code>stop()</code>; <code>Collectible extends Discountable</code>; <code>instanceof</code> checks.</td></tr>
+    <tr><td class="num"><span class="pill">7</span></td><td>Arrays, Collections</td><td><code>Track[]</code>; a shared array reference; <code>ArrayList</code> add, insert, set, remove, search, <code>addAll</code>, <code>subList</code>; <code>Iterator.remove()</code>; <code>ListIterator</code> both ways with set and add; <code>LinkedList</code> queue and both ends; generics.</td></tr>
+    <tr><td class="num"><span class="pill">8</span></td><td>Exception Handling</td><td>Normal and exceptional flow; checked and unchecked custom exceptions; multiple catch; nested try; a throw inside catch; propagation C → B → A; return and finally.</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="n">5</span>Demo plan (5 minutes)</h2>
+  <ol class="steps">
+    <li><span class="t">0:00</span><div><b>Compile.</b> Run <code>javac -d out src/*.java</code>, then <code>java -cp out Main</code> to show the menu.</div></li>
+    <li><span class="t">0:30</span><div><b>Topic 1.</b> The negative price is rejected and the old price stays. <code>c = a</code> changes both, because they are one object.</div></li>
+    <li><span class="t">1:15</span><div><b>Topic 2.</b> The printed constructor steps show <code>this(...)</code> chaining. Then the two <code>restock()</code> results and <code>show('A')</code> printing 65.</div></li>
+    <li><span class="t">2:00</span><div><b>Topic 4.</b> The constructor order Product → VinylRecord → LimitedEdition, then <code>super.play()</code>.</div></li>
+    <li><span class="t">2:45</span><div><b>Topic 5.</b> One <code>Product[]</code> loop with three different outputs; <code>p.category</code> gives "Product" but <code>p.getType()</code> gives "Vinyl".</div></li>
+    <li><span class="t">3:30</span><div><b>Topic 7.</b> The queue's <code>peek()</code> and <code>poll()</code>, and the ListIterator going backward.</div></li>
+    <li><span class="t">4:15</span><div><b>Topic 8.</b> <code>sell(10)</code> throws <code>OutOfStockException</code>; <code>finally</code> runs even after <code>return</code>.</div></li>
+  </ol>
+  <pre class="code">$ java -cp out Main 8
+--- Exceptional flow: try -> catch -> finally ---
+  catch: Only 1 left of "Random Access Memories", but you asked for 10
+  finally: always runs</pre>
+</section>
+
+<section>
+  <h2><span class="n">6</span>Limitations and future work</h2>
+  <ul>
+    <li>Data is created in code and is lost when the program ends. Saving to a file would keep it.</li>
+    <li>The menu runs demonstrations. A full shop menu (add item, sell item, show cart) could use the same classes.</li>
+    <li>More product types, such as CDs or gift cards, would only need a new class that extends <code>Product</code>.</li>
+  </ul>
+</section>
+
+</div>

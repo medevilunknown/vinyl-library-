@@ -1,34 +1,50 @@
-# Digital Vinyl Store API
+# Digital Vinyl Store (Java)
 
-Everything runs from Terminal. Run the original OOP demo with `npm run demo`. Start the collection API in one terminal:
+COMP205 Object-Oriented Programming final project.
 
-```sh
-npm run api
-```
+A small record shop program. It sells vinyl records, limited editions and cassettes.
+Each part of the OOP syllabus has its own numbered topic in the menu, so you can run and explain one topic at a time.
 
-Leave that terminal running. Use a second Terminal window for the commands below. You do not need to open `localhost:3000` in a browser; if you want to see the API help directly, use `curl http://localhost:3000`.
+## How to run
 
-If port 3000 is occupied, start it on port 3001 instead, then point the CLI at that port:
-
-```sh
-PORT=3001 npm run api
-VINYL_API_URL=http://127.0.0.1:3001 npm run vinyl -- list
-```
-
-Use these commands from a second terminal (no installation required):
+You need Java 8 or newer (`java -version` to check).
 
 ```sh
-npm run vinyl -- list
-npm run vinyl -- search daft
-npm run vinyl -- album ram
-npm run vinyl -- play ram get-lucky
-npm run vinyl -- pause
-npm run vinyl -- skip 30
-npm run vinyl -- skip -10
-npm run vinyl -- next
-npm run vinyl -- previous
-npm run vinyl -- volume 60
-npm run vinyl -- status
+javac -d out src/*.java     # compile all files into the "out" folder
+java -cp out Main           # open the menu
+java -cp out Main 4         # run topic 4 directly
+java -cp out Main 9         # run all 8 topics
 ```
 
-The API is local at `http://localhost:3000`. Main endpoints are `GET /api/vinyls?search=...`, `GET /api/vinyls/:id`, `GET /api/player`, and `POST /api/player/{play,pause,next,previous,seek,volume}`. All responses are JSON; failed requests have `{ "error": { "code", "message" } }`.
+## Menu
+
+| No. | Topic | Main files |
+|-----|-------|------------|
+| 1 | Classes, Objects and Encapsulation | `Product.java`, `Main.java` |
+| 2 | Constructors and Method Overloading | `VinylRecord.java`, `Track.java` |
+| 3 | Static Members and Nested Classes | `Product.java`, `Store.java` |
+| 4 | Inheritance | `VinylRecord.java`, `LimitedEdition.java`, `Cassette.java` |
+| 5 | Polymorphism | `Main.java` (topic5) |
+| 6 | Abstract Classes and Interfaces | `Product.java`, `Playable.java`, `Discountable.java`, `Collectible.java` |
+| 7 | Arrays and Collections | `Main.java` (topic7), `Store.java` |
+| 8 | Exception Handling | `OutOfStockException.java`, `InvalidPriceException.java`, `Main.java` (topic8) |
+
+## Class structure
+
+```
+Product (abstract)
+├── VinylRecord        implements Playable, Discountable
+│   └── LimitedEdition implements Collectible
+└── Cassette           implements Playable
+
+Collectible extends Discountable      (interface inheritance)
+
+Store (Singleton)
+├── Store.Receipt  (static nested class)
+└── Store.Cart     (inner class)
+
+OutOfStockException   extends Exception          (checked)
+InvalidPriceException extends RuntimeException   (unchecked)
+```
+
+The older JavaScript version is kept in `js-version/`.
