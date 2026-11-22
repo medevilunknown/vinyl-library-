@@ -76,6 +76,14 @@ public class Store {
             System.out.println("  Added to cart at " + storeName + ": " + p.getName());
         }
 
+        public ArrayList<Product> getItems() {
+            return items;
+        }
+
+        public void clear() {
+            items.clear();
+        }
+
         public double total() {
             double sum = 0;
             for (Product p : items) {

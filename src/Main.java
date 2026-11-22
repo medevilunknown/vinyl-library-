@@ -24,20 +24,51 @@ public class Main {
         }
 
         Scanner sc = new Scanner(System.in);
+        StoreApp.loadCatalogue();
+        while (true) {
+            printWelcome();
+            int choice = StoreApp.readNumber(sc, "  Choose an option: ");
+            if (choice == 1) {
+                StoreApp.browse(sc);
+            } else if (choice == 2) {
+                StoreApp.search(sc);
+            } else if (choice == 3) {
+                StoreApp.viewCart(sc);
+            } else if (choice == 4) {
+                topicMenu(sc);
+            } else if (choice == 0) {
+                System.out.println("  Thanks for visiting. Keep spinning!");
+                break;
+            } else {
+                System.out.println("  Please choose 0 to 4.");
+            }
+        }
+        sc.close();
+    }
+
+    static void printWelcome() {
+        System.out.println();
+        System.out.println("  ==================================================");
+        System.out.println("              WELCOME TO GROOVE STREET VINYL");
+        System.out.println("         your record shop, right in the terminal");
+        System.out.println("  ==================================================");
+        System.out.println("    1. Browse and play records");
+        System.out.println("    2. Search for an album");
+        System.out.println("    3. View my cart");
+        System.out.println("    4. OOP topic demos (for the viva)");
+        System.out.println("    0. Exit");
+    }
+
+    // The OOP demo menu: one topic per number
+    static void topicMenu(Scanner sc) {
         while (true) {
             printMenu();
-            System.out.print("Choose a topic number: ");
-            if (!sc.hasNextInt()) {
-                break;   // no more input
-            }
-            int choice = sc.nextInt();
+            int choice = StoreApp.readNumber(sc, "Choose a topic number (0 to go back): ");
             if (choice == 0) {
-                System.out.println("Goodbye!");
-                break;
+                return;
             }
             runTopic(choice);
         }
-        sc.close();
     }
 
     static void printMenu() {
@@ -54,7 +85,7 @@ public class Main {
         System.out.println("  7. Arrays and Collections");
         System.out.println("  8. Exception Handling");
         System.out.println("  9. Run ALL topics");
-        System.out.println("  0. Exit");
+        System.out.println("  0. Back to the shop");
     }
 
     static void runTopic(int n) {
@@ -490,9 +521,8 @@ public class Main {
         System.out.println("  removeFirst + removeLast: " + orders);
 
         sub("Collection holding object references: the Store's products");
+        StoreApp.loadCatalogue();   // puts the shop's 6 products into the Store
         Store store = Store.getInstance();
-        store.addProduct(new VinylRecord("Rumours", "Fleetwood Mac", 2099, 8));
-        store.addProduct(new Cassette("Nevermind", 799, 4));
         for (Product p : store.getProducts()) {
             p.showDetails();
         }

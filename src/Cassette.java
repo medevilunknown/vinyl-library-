@@ -6,9 +6,21 @@
 
 public class Cassette extends Product implements Playable {
 
+    private String artist;
+
+    // Two constructors = constructor overloading
     public Cassette(String name, double price, int stock) {
+        this(name, "Unknown Artist", price, stock);
+    }
+
+    public Cassette(String name, String artist, double price, int stock) {
         super(name, price, stock);
+        this.artist = artist;
         if (showSteps) System.out.println("  [constructor] Cassette(\"" + name + "\")");
+    }
+
+    public String getArtist() {
+        return artist;
     }
 
     @Override

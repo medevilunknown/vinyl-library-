@@ -135,11 +135,12 @@ th { font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spa
     <li><b>Show it in our project.</b> "In <code>Product.java</code>, <code>price</code> is private, and <code>setPrice()</code> rejects negative values." Then run <code>java -cp out Main 1</code>.</li>
     <li><b>Write a tiny example</b> if they ask, and say what it prints.</li>
   </ol>
+  <p>If they ask "where is this used in the shop?", point to <code>StoreApp.java</code>: <code>store.new Cart()</code> is an inner class, <code>new Store.Receipt(...)</code> is a static nested class, <code>p instanceof VinylRecord</code> is downcasting, <code>((Playable) p).play()</code> is polymorphism (turntable or cassette deck), and buying catches the checked <code>OutOfStockException</code>.</p>
   <p>If you forget something, say what you do know and point to the code. Explaining the code calmly beats rushing.</p>
   <div class="tbl"><table>
     <tr><th>Command</th><th>What it does</th></tr>
     <tr><td><code>javac -d out src/*.java</code></td><td>Compiles all files into the <code>out</code> folder</td></tr>
-    <tr><td><code>java -cp out Main</code></td><td>Opens the menu</td></tr>
+    <tr><td><code>java -cp out Main</code></td><td>Opens the shop's welcome screen. Option 4 opens the OOP topic menu.</td></tr>
     <tr><td><code>java -cp out Main 5</code></td><td>Runs only topic 5</td></tr>
   </table></div>
 </section>

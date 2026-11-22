@@ -11,10 +11,15 @@ public class Track {
     String title;
     int seconds;
 
-    // Turns 369 seconds into "6:09"
+    // Length of this track, like "6:09"
     String getLength() {
-        int minutes = seconds / 60;
-        int secs = seconds % 60;
+        return formatTime(seconds);
+    }
+
+    // STATIC helper: turns 369 seconds into "6:09". Needs no Track object.
+    static String formatTime(int totalSeconds) {
+        int minutes = totalSeconds / 60;
+        int secs = totalSeconds % 60;
         if (secs < 10) {
             return minutes + ":0" + secs;
         }

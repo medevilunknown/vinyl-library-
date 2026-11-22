@@ -27,6 +27,7 @@ public abstract class Product {
     private double price;         // private   -> others must use getPrice() / setPrice()
     protected int stock;          // protected -> child classes can use it directly
     String category = "Product";  // no keyword = package-private (used in Topic 5)
+    private Track[] tracks = new Track[0];   // the songs on this album (an ARRAY of objects)
 
     // ---------- INSTANCE BLOCK: runs EVERY time an object is created, before the constructor body ----------
     {
@@ -94,6 +95,14 @@ public abstract class Product {
 
     public int getStock() {
         return stock;
+    }
+
+    public Track[] getTracks() {
+        return tracks;
+    }
+
+    public void setTracks(Track[] tracks) {
+        this.tracks = tracks;
     }
 
     public void setStock(int stock) {

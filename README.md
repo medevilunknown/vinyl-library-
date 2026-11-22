@@ -2,8 +2,9 @@
 
 COMP205 Object-Oriented Programming final project.
 
-A small record shop program. It sells vinyl records, limited editions and cassettes.
-Each part of the OOP syllabus has its own numbered topic in the menu, so you can run and explain one topic at a time.
+A record shop you use in the terminal. Browse vinyl records, limited editions and cassettes,
+pick one, see its tracks and play them, add records to a cart and buy them.
+Each part of the OOP syllabus also has its own numbered topic demo, so you can run and explain one topic at a time.
 
 ## How to run
 
@@ -11,12 +12,32 @@ You need Java 8 or newer (`java -version` to check).
 
 ```sh
 javac -d out src/*.java     # compile all files into the "out" folder
-java -cp out Main           # open the menu
-java -cp out Main 4         # run topic 4 directly
-java -cp out Main 9         # run all 8 topics
+java -cp out Main           # open the shop (welcome screen)
+java -cp out Main 4         # run OOP topic 4 directly
+java -cp out Main 9         # run all 8 OOP topics
 ```
 
-## Menu
+## The shop
+
+```
+  ==================================================
+              WELCOME TO GROOVE STREET VINYL
+         your record shop, right in the terminal
+  ==================================================
+    1. Browse and play records
+    2. Search for an album
+    3. View my cart
+    4. OOP topic demos (for the viva)
+    0. Exit
+```
+
+Pick a record by its number to see its tracks. Then you can:
+
+- play one track or the whole album (a progress bar shows it playing, sped up)
+- add it to your cart
+- buy it now (asking for more copies than are in stock shows an error)
+
+## OOP topic menu (option 4)
 
 | No. | Topic | Main files |
 |-----|-------|------------|
@@ -42,6 +63,9 @@ Collectible extends Discountable      (interface inheritance)
 Store (Singleton)
 ├── Store.Receipt  (static nested class)
 └── Store.Cart     (inner class)
+
+StoreApp   the terminal shop screens (uses Store, Product, Track)
+Track      one song; every Product holds a Track[]
 
 OutOfStockException   extends Exception          (checked)
 InvalidPriceException extends RuntimeException   (unchecked)

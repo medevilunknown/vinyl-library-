@@ -132,7 +132,7 @@ pre.code {
   <div class="meta">
     <div><b>Language</b><span>Java 8 or newer (tested on Java 17)</span></div>
     <div><b>Libraries</b><span>Only java.util (ArrayList, LinkedList, Iterator, Scanner)</span></div>
-    <div><b>Size</b><span>12 classes and interfaces in <span class="mono">src/</span></span></div>
+    <div><b>Size</b><span>13 classes and interfaces in <span class="mono">src/</span></span></div>
     <div><b>Source</b><span class="mono">github.com/medevilunknown/vinyl-library-</span></div>
   </div>
   <div class="team">
@@ -151,7 +151,7 @@ pre.code {
   <p>A small record shop sells three kinds of items: vinyl records, numbered limited-edition vinyls and cassettes. Every item has a name, a price and a stock count. The shop needs to add items, search for them, restock them, sell them, play a preview and give discounts.</p>
   <p>Wrong data must be stopped. A price can not be negative, stock can not go below zero, and a sale can not ask for more copies than the shop has. When that happens, the program throws an exception with a clear message and the stored values stay the same.</p>
   <h3>How the program is organised</h3>
-  <p>When it starts, <code>Main</code> shows a menu with eight topics, one for each part of the syllabus. Each topic runs a short demonstration that uses the store's classes and prints labelled results, so any team member can run one topic and explain the code behind it.</p>
+  <p>When it starts, the program welcomes you to the shop. You can browse the records, pick one, see its track list and play tracks with a progress bar, add records to a cart and buy them. A separate menu option opens the eight OOP topics, one for each part of the syllabus. Each topic runs a short demonstration that uses the store's classes and prints labelled results, so any team member can run one topic and explain the code behind it.</p>
 </section>
 
 <section>
@@ -167,6 +167,7 @@ pre.code {
     <tr><td>solid line, hollow triangle</td><td>inheritance (<code>extends</code>)</td><td>VinylRecord → Product</td></tr>
     <tr><td>dashed line, hollow triangle</td><td>realization (<code>implements</code>)</td><td>Cassette ⇢ Playable</td></tr>
     <tr><td>hollow diamond</td><td>aggregation (holds a list of)</td><td>Store ◇— Product</td></tr>
+    <tr><td>filled diamond</td><td>composition (owns; parts belong to it)</td><td>Product ◆— Track</td></tr>
     <tr><td>circle with a plus</td><td>nested class</td><td>Store ⊕— Store.Cart</td></tr>
     <tr><td>dashed line, open arrow</td><td>dependency (uses, creates, throws)</td><td>Product ⇢ OutOfStockException</td></tr>
   </table></div>
@@ -217,7 +218,7 @@ pre.code {
 <section>
   <h2><span class="n">2.2</span>Class diagram: products and interfaces</h2>
   <p><i>Product</i> is abstract and holds what every item shares. <code>VinylRecord</code> and <code>Cassette</code> extend it (hierarchical inheritance), and <code>LimitedEdition</code> extends <code>VinylRecord</code> (multilevel inheritance). <code>VinylRecord</code> implements two interfaces at once, which is how Java gets multiple inheritance. <code>Collectible</code> extends <code>Discountable</code>, so <code>LimitedEdition</code> must write both <code>getCertificate()</code> and <code>applyDiscount()</code>.</p>
-  <div class="diagram"><svg class="uml" viewBox="0 0 1142 948" style="min-width:822px" role="img" aria-label="UML class diagram of the product hierarchy and interfaces" xmlns="http://www.w3.org/2000/svg">
+  <div class="diagram"><svg class="uml" viewBox="0 0 1212 996" style="min-width:872px" role="img" aria-label="UML class diagram of the product hierarchy and interfaces" xmlns="http://www.w3.org/2000/svg">
 <g class="u-class">
 <rect class="u-box" x="40" y="20" width="200" height="96"/>
 <text class="u-stereo" x="140.0" y="37" text-anchor="middle">«interface»</text>
@@ -228,192 +229,224 @@ pre.code {
 <text class="u-mem" x="50" y="108">+ stop() : void {default}</text>
 </g>
 <g class="u-class">
-<rect class="u-box" x="340" y="20" width="258" height="350"/>
-<text class="u-stereo" x="469.0" y="37" text-anchor="middle">«abstract»</text>
-<text class="u-name u-italic" x="469.0" y="56" text-anchor="middle">Product</text>
-<line class="u-div" x1="340" y1="62" x2="598" y2="62"/>
-<text class="u-mem" x="350" y="80" text-decoration="underline">~ productCount : int</text>
-<text class="u-mem" x="350" y="96" text-decoration="underline">~ showSteps : boolean</text>
-<text class="u-mem" x="350" y="112">- name : String</text>
-<text class="u-mem" x="350" y="128">- price : double</text>
-<text class="u-mem" x="350" y="144"># stock : int</text>
-<text class="u-mem" x="350" y="160">~ category : String</text>
-<line class="u-div" x1="340" y1="168" x2="598" y2="168"/>
-<text class="u-mem" x="350" y="186">+ Product(name, price, stock)</text>
-<text class="u-mem u-italic" x="350" y="202">+ getType() : String</text>
-<text class="u-mem" x="350" y="218">+ showDetails() : void</text>
-<text class="u-mem" x="350" y="234">+ getStoreName() : String {final}</text>
-<text class="u-mem" x="350" y="250" text-decoration="underline">+ storeInfo() : void</text>
-<text class="u-mem" x="350" y="266">+ sell(quantity : int) : void</text>
-<text class="u-mem" x="350" y="282">+ getName() : String</text>
-<text class="u-mem" x="350" y="298">+ setName(name : String) : void</text>
-<text class="u-mem" x="350" y="314">+ getPrice() : double</text>
-<text class="u-mem" x="350" y="330">+ setPrice(price : double) : void</text>
-<text class="u-mem" x="350" y="346">+ getStock() : int</text>
-<text class="u-mem" x="350" y="362">+ setStock(stock : int) : void</text>
+<rect class="u-box" x="400" y="20" width="279" height="398"/>
+<text class="u-stereo" x="539.5" y="37" text-anchor="middle">«abstract»</text>
+<text class="u-name u-italic" x="539.5" y="56" text-anchor="middle">Product</text>
+<line class="u-div" x1="400" y1="62" x2="679" y2="62"/>
+<text class="u-mem" x="410" y="80" text-decoration="underline">~ productCount : int</text>
+<text class="u-mem" x="410" y="96" text-decoration="underline">~ showSteps : boolean</text>
+<text class="u-mem" x="410" y="112">- name : String</text>
+<text class="u-mem" x="410" y="128">- price : double</text>
+<text class="u-mem" x="410" y="144"># stock : int</text>
+<text class="u-mem" x="410" y="160">~ category : String</text>
+<text class="u-mem" x="410" y="176">- tracks : Track[]</text>
+<line class="u-div" x1="400" y1="184" x2="679" y2="184"/>
+<text class="u-mem" x="410" y="202">+ Product(name, price, stock)</text>
+<text class="u-mem u-italic" x="410" y="218">+ getType() : String</text>
+<text class="u-mem" x="410" y="234">+ showDetails() : void</text>
+<text class="u-mem" x="410" y="250">+ getStoreName() : String {final}</text>
+<text class="u-mem" x="410" y="266" text-decoration="underline">+ storeInfo() : void</text>
+<text class="u-mem" x="410" y="282">+ sell(quantity : int) : void</text>
+<text class="u-mem" x="410" y="298">+ getName() : String</text>
+<text class="u-mem" x="410" y="314">+ setName(name : String) : void</text>
+<text class="u-mem" x="410" y="330">+ getPrice() : double</text>
+<text class="u-mem" x="410" y="346">+ setPrice(price : double) : void</text>
+<text class="u-mem" x="410" y="362">+ getStock() : int</text>
+<text class="u-mem" x="410" y="378">+ setStock(stock : int) : void</text>
+<text class="u-mem" x="410" y="394">+ getTracks() : Track[]</text>
+<text class="u-mem" x="410" y="410">+ setTracks(tracks : Track[]) : void</text>
 </g>
 <g class="u-class">
-<rect class="u-box" x="800" y="20" width="322" height="80"/>
-<text class="u-stereo" x="961.0" y="37" text-anchor="middle">«interface»</text>
-<text class="u-name" x="961.0" y="56" text-anchor="middle">Discountable</text>
-<line class="u-div" x1="800" y1="62" x2="1122" y2="62"/>
-<line class="u-div" x1="800" y1="74" x2="1122" y2="74"/>
-<text class="u-mem u-italic" x="810" y="92">+ applyDiscount(percent : double) : double</text>
+<rect class="u-box" x="870" y="20" width="322" height="80"/>
+<text class="u-stereo" x="1031.0" y="37" text-anchor="middle">«interface»</text>
+<text class="u-name" x="1031.0" y="56" text-anchor="middle">Discountable</text>
+<line class="u-div" x1="870" y1="62" x2="1192" y2="62"/>
+<line class="u-div" x1="870" y1="74" x2="1192" y2="74"/>
+<text class="u-mem u-italic" x="880" y="92">+ applyDiscount(percent : double) : double</text>
 </g>
 <g class="u-class">
-<rect class="u-box" x="800" y="190" width="322" height="80"/>
-<text class="u-stereo" x="961.0" y="207" text-anchor="middle">«interface»</text>
-<text class="u-name" x="961.0" y="226" text-anchor="middle">Collectible</text>
-<line class="u-div" x1="800" y1="232" x2="1122" y2="232"/>
-<line class="u-div" x1="800" y1="244" x2="1122" y2="244"/>
-<text class="u-mem u-italic" x="810" y="262">+ getCertificate() : String</text>
+<rect class="u-box" x="870" y="190" width="322" height="80"/>
+<text class="u-stereo" x="1031.0" y="207" text-anchor="middle">«interface»</text>
+<text class="u-name" x="1031.0" y="226" text-anchor="middle">Collectible</text>
+<line class="u-div" x1="870" y1="232" x2="1192" y2="232"/>
+<line class="u-div" x1="870" y1="244" x2="1192" y2="244"/>
+<text class="u-mem u-italic" x="880" y="262">+ getCertificate() : String</text>
 </g>
 <g class="u-class">
-<rect class="u-box" x="40" y="440" width="236" height="96"/>
-<text class="u-name" x="158.0" y="463" text-anchor="middle">Cassette</text>
-<line class="u-div" x1="40" y1="466" x2="276" y2="466"/>
-<line class="u-div" x1="40" y1="478" x2="276" y2="478"/>
-<text class="u-mem" x="50" y="496">+ Cassette(name, price, stock)</text>
-<text class="u-mem" x="50" y="512">+ getType() : String</text>
-<text class="u-mem" x="50" y="528">+ play() : void</text>
+<rect class="u-box" x="40" y="488" width="294" height="142"/>
+<text class="u-name" x="187.0" y="511" text-anchor="middle">Cassette</text>
+<line class="u-div" x1="40" y1="514" x2="334" y2="514"/>
+<text class="u-mem" x="50" y="532">- artist : String</text>
+<line class="u-div" x1="40" y1="540" x2="334" y2="540"/>
+<text class="u-mem" x="50" y="558">+ Cassette(name, price, stock)</text>
+<text class="u-mem" x="50" y="574">+ Cassette(name, artist, price, stock)</text>
+<text class="u-mem" x="50" y="590">+ getArtist() : String</text>
+<text class="u-mem" x="50" y="606">+ getType() : String</text>
+<text class="u-mem" x="50" y="622">+ play() : void</text>
 </g>
 <g class="u-class">
-<rect class="u-box" x="340" y="440" width="387" height="286"/>
-<text class="u-name" x="533.5" y="463" text-anchor="middle">VinylRecord</text>
-<line class="u-div" x1="340" y1="466" x2="727" y2="466"/>
-<text class="u-mem" x="350" y="484">- artist : String</text>
-<text class="u-mem" x="350" y="500">~ category : String</text>
-<line class="u-div" x1="340" y1="508" x2="727" y2="508"/>
-<text class="u-mem" x="350" y="526">+ VinylRecord()</text>
-<text class="u-mem" x="350" y="542">+ VinylRecord(name, artist, price, stock)</text>
-<text class="u-mem" x="350" y="558">+ VinylRecord(other : VinylRecord)</text>
-<text class="u-mem" x="350" y="574">+ restock(quantity : int) : void</text>
-<text class="u-mem" x="350" y="590">+ restock(quantity : int, supplier : String) : void</text>
-<text class="u-mem" x="350" y="606">+ getType() : String</text>
-<text class="u-mem" x="350" y="622">+ showDetails() : void</text>
-<text class="u-mem" x="350" y="638">+ play() : void</text>
-<text class="u-mem" x="350" y="654">+ applyDiscount(percent : double) : double</text>
-<text class="u-mem" x="350" y="670" text-decoration="underline">+ storeInfo() : void</text>
-<text class="u-mem" x="350" y="686">+ cleanRecord() : void</text>
-<text class="u-mem" x="350" y="702">+ getArtist() : String</text>
-<text class="u-mem" x="350" y="718">+ setArtist(artist : String) : void</text>
+<rect class="u-box" x="400" y="488" width="387" height="286"/>
+<text class="u-name" x="593.5" y="511" text-anchor="middle">VinylRecord</text>
+<line class="u-div" x1="400" y1="514" x2="787" y2="514"/>
+<text class="u-mem" x="410" y="532">- artist : String</text>
+<text class="u-mem" x="410" y="548">~ category : String</text>
+<line class="u-div" x1="400" y1="556" x2="787" y2="556"/>
+<text class="u-mem" x="410" y="574">+ VinylRecord()</text>
+<text class="u-mem" x="410" y="590">+ VinylRecord(name, artist, price, stock)</text>
+<text class="u-mem" x="410" y="606">+ VinylRecord(other : VinylRecord)</text>
+<text class="u-mem" x="410" y="622">+ restock(quantity : int) : void</text>
+<text class="u-mem" x="410" y="638">+ restock(quantity : int, supplier : String) : void</text>
+<text class="u-mem" x="410" y="654">+ getType() : String</text>
+<text class="u-mem" x="410" y="670">+ showDetails() : void</text>
+<text class="u-mem" x="410" y="686">+ play() : void</text>
+<text class="u-mem" x="410" y="702">+ applyDiscount(percent : double) : double</text>
+<text class="u-mem" x="410" y="718" text-decoration="underline">+ storeInfo() : void</text>
+<text class="u-mem" x="410" y="734">+ cleanRecord() : void</text>
+<text class="u-mem" x="410" y="750">+ getArtist() : String</text>
+<text class="u-mem" x="410" y="766">+ setArtist(artist : String) : void</text>
 </g>
 <g class="u-class">
-<rect class="u-box" x="340" y="786" width="394" height="142"/>
-<text class="u-name" x="537.0" y="809" text-anchor="middle">LimitedEdition</text>
-<line class="u-div" x1="340" y1="812" x2="734" y2="812"/>
-<text class="u-mem" x="350" y="830">- serialNumber : int</text>
-<line class="u-div" x1="340" y1="838" x2="734" y2="838"/>
-<text class="u-mem" x="350" y="856">+ LimitedEdition(name, artist, price, stock, serial)</text>
-<text class="u-mem" x="350" y="872">+ getType() : String</text>
-<text class="u-mem" x="350" y="888">+ play() : void</text>
-<text class="u-mem" x="350" y="904">+ applyDiscount(percent : double) : double</text>
-<text class="u-mem" x="350" y="920">+ getCertificate() : String</text>
+<rect class="u-box" x="400" y="834" width="394" height="142"/>
+<text class="u-name" x="597.0" y="857" text-anchor="middle">LimitedEdition</text>
+<line class="u-div" x1="400" y1="860" x2="794" y2="860"/>
+<text class="u-mem" x="410" y="878">- serialNumber : int</text>
+<line class="u-div" x1="400" y1="886" x2="794" y2="886"/>
+<text class="u-mem" x="410" y="904">+ LimitedEdition(name, artist, price, stock, serial)</text>
+<text class="u-mem" x="410" y="920">+ getType() : String</text>
+<text class="u-mem" x="410" y="936">+ play() : void</text>
+<text class="u-mem" x="410" y="952">+ applyDiscount(percent : double) : double</text>
+<text class="u-mem" x="410" y="968">+ getCertificate() : String</text>
 </g>
-<path class="u-line" d="M500,440 L500,370"/>
-<polygon class="u-head-hollow" points="500,370 492.0,384.0 508.0,384.0"/>
-<path class="u-line" d="M500,786 L500,726"/>
-<polygon class="u-head-hollow" points="500,726 492.0,740.0 508.0,740.0"/>
-<path class="u-line" d="M276,470 L308.0,470 L308.0,240 L340,240"/>
-<polygon class="u-head-hollow" points="340,240 326.0,232.0 326.0,248.0"/>
-<path class="u-line u-dash" d="M160,440 L160,116"/>
+<path class="u-line" d="M560,488 L560,418"/>
+<polygon class="u-head-hollow" points="560,418 552.0,432.0 568.0,432.0"/>
+<path class="u-line" d="M560,834 L560,774"/>
+<polygon class="u-head-hollow" points="560,774 552.0,788.0 568.0,788.0"/>
+<path class="u-line" d="M334,518 L367.0,518 L367.0,240 L400,240"/>
+<polygon class="u-head-hollow" points="400,240 386.0,232.0 386.0,248.0"/>
+<path class="u-line u-dash" d="M160,488 L160,116"/>
 <polygon class="u-head-hollow" points="160,116 152.0,130.0 168.0,130.0"/>
-<path class="u-line u-dash" d="M340,686 L20,686 L20,80 L40,80"/>
+<path class="u-line u-dash" d="M400,734 L20,734 L20,80 L40,80"/>
 <polygon class="u-head-hollow" points="40,80 26.0,72.0 26.0,88.0"/>
-<path class="u-line u-dash" d="M727,470 L763.5,470 L763.5,76 L800,76"/>
-<polygon class="u-head-hollow" points="800,76 786.0,68.0 786.0,84.0"/>
-<path class="u-line" d="M961.0,190 L961.0,100"/>
-<polygon class="u-head-hollow" points="961.0,100 953.0,114.0 969.0,114.0"/>
-<path class="u-line u-dash" d="M734,826 L961.0,826 L961.0,270"/>
-<polygon class="u-head-hollow" points="961.0,270 953.0,284.0 969.0,284.0"/>
+<path class="u-line u-dash" d="M787,518 L828.5,518 L828.5,76 L870,76"/>
+<polygon class="u-head-hollow" points="870,76 856.0,68.0 856.0,84.0"/>
+<path class="u-line" d="M1031.0,190 L1031.0,100"/>
+<polygon class="u-head-hollow" points="1031.0,100 1023.0,114.0 1039.0,114.0"/>
+<path class="u-line u-dash" d="M794,874 L1031.0,874 L1031.0,270"/>
+<polygon class="u-head-hollow" points="1031.0,270 1023.0,284.0 1039.0,284.0"/>
 </svg></div>
   <p class="caption">Figure 2. Product hierarchy. The overloaded <code>restock()</code> and the three <code>VinylRecord</code> constructors appear as separate lines in the operations compartment.</p>
 </section>
 
 <section>
-  <h2><span class="n">2.3</span>Class diagram: store and helpers</h2>
-  <p><code>Store</code> is a Singleton: its constructor is private, and <code>getInstance()</code> always returns the same object. It holds a list of products. <code>Store.Receipt</code> is a static nested class and <code>Store.Cart</code> is an inner class. <code>Track</code> has no constructor of its own, so Java gives it a default one.</p>
-  <div class="diagram"><svg class="uml" viewBox="0 0 1130 436" style="min-width:813px" role="img" aria-label="UML class diagram of the store, its nested classes, Track and Main" xmlns="http://www.w3.org/2000/svg">
+  <h2><span class="n">2.3</span>Class diagram: shop app, store and helpers</h2>
+  <p><code>Main</code> shows the welcome menu and hands the shop screens to <code>StoreApp</code>. StoreApp fills the <code>Store</code> with six records, each with its own <code>Track[]</code>, and runs browsing, playing, the cart and buying. <code>Store</code> is a Singleton: its constructor is private, and <code>getInstance()</code> always returns the same object. <code>Store.Receipt</code> is a static nested class and <code>Store.Cart</code> is an inner class. Each <i>Product</i> owns its tracks (composition). <code>Track</code> has no constructor of its own, so Java gives it a default one.</p>
+  <div class="diagram"><svg class="uml" viewBox="0 0 894 800" style="min-width:643px" role="img" aria-label="UML class diagram of the shop app, the store, its nested classes, Track and Main" xmlns="http://www.w3.org/2000/svg">
 <g class="u-class">
-<rect class="u-box" x="20" y="20" width="236" height="96"/>
-<text class="u-name" x="138.0" y="43" text-anchor="middle">Main</text>
-<line class="u-div" x1="20" y1="46" x2="256" y2="46"/>
-<line class="u-div" x1="20" y1="58" x2="256" y2="58"/>
+<rect class="u-box" x="20" y="20" width="250" height="128"/>
+<text class="u-name" x="145.0" y="43" text-anchor="middle">Main</text>
+<line class="u-div" x1="20" y1="46" x2="270" y2="46"/>
+<line class="u-div" x1="20" y1="58" x2="270" y2="58"/>
 <text class="u-mem" x="30" y="76" text-decoration="underline">+ main(args : String[]) : void</text>
-<text class="u-mem" x="30" y="92" text-decoration="underline">~ runTopic(n : int) : void</text>
-<text class="u-mem" x="30" y="108" text-decoration="underline">~ topic1() … topic8() : void</text>
+<text class="u-mem" x="30" y="92" text-decoration="underline">~ printWelcome() : void</text>
+<text class="u-mem" x="30" y="108" text-decoration="underline">~ topicMenu(sc : Scanner) : void</text>
+<text class="u-mem" x="30" y="124" text-decoration="underline">~ runTopic(n : int) : void</text>
+<text class="u-mem" x="30" y="140" text-decoration="underline">~ topic1() … topic8() : void</text>
 </g>
 <g class="u-class">
-<rect class="u-box" x="360" y="20" width="286" height="190"/>
-<text class="u-stereo" x="503.0" y="37" text-anchor="middle">«singleton»</text>
-<text class="u-name" x="503.0" y="56" text-anchor="middle">Store</text>
-<line class="u-div" x1="360" y1="62" x2="646" y2="62"/>
-<text class="u-mem" x="370" y="80" text-decoration="underline">- instance : Store</text>
-<text class="u-mem" x="370" y="96">- storeName : String</text>
-<text class="u-mem" x="370" y="112">- products : ArrayList&lt;Product&gt;</text>
-<line class="u-div" x1="360" y1="120" x2="646" y2="120"/>
-<text class="u-mem" x="370" y="138">- Store()</text>
-<text class="u-mem" x="370" y="154" text-decoration="underline">+ getInstance() : Store</text>
-<text class="u-mem" x="370" y="170">+ addProduct(p : Product) : void</text>
-<text class="u-mem" x="370" y="186">+ getProducts() : ArrayList&lt;Product&gt;</text>
-<text class="u-mem" x="370" y="202">+ findByName(name : String) : Product</text>
+<rect class="u-box" x="380" y="20" width="438" height="238"/>
+<text class="u-name" x="599.0" y="43" text-anchor="middle">StoreApp</text>
+<line class="u-div" x1="380" y1="46" x2="818" y2="46"/>
+<text class="u-mem" x="390" y="64" text-decoration="underline">- loaded : boolean</text>
+<text class="u-mem" x="390" y="80" text-decoration="underline">- cart : Store.Cart</text>
+<line class="u-div" x1="380" y1="88" x2="818" y2="88"/>
+<text class="u-mem" x="390" y="106" text-decoration="underline">+ loadCatalogue() : void</text>
+<text class="u-mem" x="390" y="122" text-decoration="underline">+ browse(sc : Scanner) : void</text>
+<text class="u-mem" x="390" y="138" text-decoration="underline">+ search(sc : Scanner) : void</text>
+<text class="u-mem" x="390" y="154" text-decoration="underline">+ viewCart(sc : Scanner) : void</text>
+<text class="u-mem" x="390" y="170" text-decoration="underline">+ readNumber(sc : Scanner, prompt : String) : int</text>
+<text class="u-mem" x="390" y="186" text-decoration="underline">- showRecord(sc : Scanner, p : Product) : void</text>
+<text class="u-mem" x="390" y="202" text-decoration="underline">- playTrack(p : Product, t : Track) : void</text>
+<text class="u-mem" x="390" y="218" text-decoration="underline">- buy(sc : Scanner, p : Product) : void</text>
+<text class="u-mem" x="390" y="234" text-decoration="underline">- makeTracks(titles : String[], seconds : int[]) : Track[]</text>
+<text class="u-mem" x="390" y="250" text-decoration="underline">- artistOf(p : Product) : String</text>
 </g>
 <g class="u-class">
-<rect class="u-box" x="960" y="60" width="150" height="42"/>
-<text class="u-stereo" x="1035.0" y="77" text-anchor="middle">«abstract»</text>
-<text class="u-name u-italic" x="1035.0" y="96" text-anchor="middle">Product</text>
+<rect class="u-box" x="20" y="328" width="315" height="110"/>
+<text class="u-name" x="177.5" y="351" text-anchor="middle">Track</text>
+<line class="u-div" x1="20" y1="354" x2="335" y2="354"/>
+<text class="u-mem" x="30" y="372">~ title : String</text>
+<text class="u-mem" x="30" y="388">~ seconds : int</text>
+<line class="u-div" x1="20" y1="396" x2="335" y2="396"/>
+<text class="u-mem" x="30" y="414">~ getLength() : String</text>
+<text class="u-mem" x="30" y="430" text-decoration="underline">~ formatTime(totalSeconds : int) : String</text>
 </g>
 <g class="u-class">
-<rect class="u-box" x="330" y="290" width="186" height="126"/>
-<text class="u-stereo" x="423.0" y="307" text-anchor="middle">«static nested class»</text>
-<text class="u-name" x="423.0" y="326" text-anchor="middle">Store.Receipt</text>
-<line class="u-div" x1="330" y1="332" x2="516" y2="332"/>
-<text class="u-mem" x="340" y="350">- item : String</text>
-<text class="u-mem" x="340" y="366">- amount : double</text>
-<line class="u-div" x1="330" y1="374" x2="516" y2="374"/>
-<text class="u-mem" x="340" y="392">+ Receipt(item, amount)</text>
-<text class="u-mem" x="340" y="408">+ print() : void</text>
+<rect class="u-box" x="380" y="328" width="286" height="190"/>
+<text class="u-stereo" x="523.0" y="345" text-anchor="middle">«singleton»</text>
+<text class="u-name" x="523.0" y="364" text-anchor="middle">Store</text>
+<line class="u-div" x1="380" y1="370" x2="666" y2="370"/>
+<text class="u-mem" x="390" y="388" text-decoration="underline">- instance : Store</text>
+<text class="u-mem" x="390" y="404">- storeName : String</text>
+<text class="u-mem" x="390" y="420">- products : ArrayList&lt;Product&gt;</text>
+<line class="u-div" x1="380" y1="428" x2="666" y2="428"/>
+<text class="u-mem" x="390" y="446">- Store()</text>
+<text class="u-mem" x="390" y="462" text-decoration="underline">+ getInstance() : Store</text>
+<text class="u-mem" x="390" y="478">+ addProduct(p : Product) : void</text>
+<text class="u-mem" x="390" y="494">+ getProducts() : ArrayList&lt;Product&gt;</text>
+<text class="u-mem" x="390" y="510">+ findByName(name : String) : Product</text>
 </g>
 <g class="u-class">
-<rect class="u-box" x="640" y="290" width="222" height="110"/>
-<text class="u-stereo" x="751.0" y="307" text-anchor="middle">«inner class»</text>
-<text class="u-name" x="751.0" y="326" text-anchor="middle">Store.Cart</text>
-<line class="u-div" x1="640" y1="332" x2="862" y2="332"/>
-<text class="u-mem" x="650" y="350">- items : ArrayList&lt;Product&gt;</text>
-<line class="u-div" x1="640" y1="358" x2="862" y2="358"/>
-<text class="u-mem" x="650" y="376">+ add(p : Product) : void</text>
-<text class="u-mem" x="650" y="392">+ total() : double</text>
+<rect class="u-box" x="20" y="518" width="150" height="42"/>
+<text class="u-stereo" x="95.0" y="535" text-anchor="middle">«abstract»</text>
+<text class="u-name u-italic" x="95.0" y="554" text-anchor="middle">Product</text>
 </g>
 <g class="u-class">
-<rect class="u-box" x="20" y="290" width="178" height="94"/>
-<text class="u-name" x="109.0" y="313" text-anchor="middle">Track</text>
-<line class="u-div" x1="20" y1="316" x2="198" y2="316"/>
-<text class="u-mem" x="30" y="334">~ title : String</text>
-<text class="u-mem" x="30" y="350">~ seconds : int</text>
-<line class="u-div" x1="20" y1="358" x2="198" y2="358"/>
-<text class="u-mem" x="30" y="376">~ getLength() : String</text>
+<rect class="u-box" x="380" y="608" width="186" height="126"/>
+<text class="u-stereo" x="473.0" y="625" text-anchor="middle">«static nested class»</text>
+<text class="u-name" x="473.0" y="644" text-anchor="middle">Store.Receipt</text>
+<line class="u-div" x1="380" y1="650" x2="566" y2="650"/>
+<text class="u-mem" x="390" y="668">- item : String</text>
+<text class="u-mem" x="390" y="684">- amount : double</text>
+<line class="u-div" x1="380" y1="692" x2="566" y2="692"/>
+<text class="u-mem" x="390" y="710">+ Receipt(item, amount)</text>
+<text class="u-mem" x="390" y="726">+ print() : void</text>
 </g>
-<path class="u-line u-dash" d="M256,60 L360,60"/>
-<polyline class="u-line" points="349.0,54.0 360,60 349.0,66.0"/>
-<text class="u-label" x="264" y="52" text-anchor="start">«uses»</text>
-<path class="u-line u-dash" d="M80,116 L80,290"/>
-<polyline class="u-line" points="86.0,279.0 80,290 74.0,279.0"/>
-<text class="u-label" x="88" y="207.0" text-anchor="start">«creates»</text>
-<path class="u-line" d="M646,81.0 L960,81.0"/>
-<polygon class="u-head-hollow" points="646,81.0 655.0,87.0 664.0,81.0 655.0,75.0"/>
-<path class="u-line" d="M423.0,210 L423.0,290"/>
-<circle class="u-head-hollow" cx="423.0" cy="218.0" r="8"/><line class="u-line" x1="415.0" y1="218.0" x2="431.0" y2="218.0"/><line class="u-line" x1="423.0" y1="210.0" x2="423.0" y2="226.0"/>
-<path class="u-line" d="M751.0,210 L751.0,290"/>
-<circle class="u-head-hollow" cx="751.0" cy="218.0" r="8"/><line class="u-line" x1="743.0" y1="218.0" x2="759.0" y2="218.0"/><line class="u-line" x1="751.0" y1="210.0" x2="751.0" y2="226.0"/>
-<path class="u-line" d="M862,330 L1035.0,330 L1035.0,102"/>
-<polygon class="u-head-hollow" points="862,330 871.0,336.0 880.0,330.0 871.0,324.0"/>
-<text class="u-label" x="666" y="73.0">products</text>
-<text class="u-label" x="952" y="73.0" text-anchor="end">0..*</text>
-<text class="u-label" x="656" y="99.0">1</text>
-<text class="u-label" x="872" y="322">items</text>
-<text class="u-label" x="1043.0" y="120">0..*</text>
+<g class="u-class">
+<rect class="u-box" x="616" y="608" width="258" height="142"/>
+<text class="u-stereo" x="745.0" y="625" text-anchor="middle">«inner class»</text>
+<text class="u-name" x="745.0" y="644" text-anchor="middle">Store.Cart</text>
+<line class="u-div" x1="616" y1="650" x2="874" y2="650"/>
+<text class="u-mem" x="626" y="668">- items : ArrayList&lt;Product&gt;</text>
+<line class="u-div" x1="616" y1="676" x2="874" y2="676"/>
+<text class="u-mem" x="626" y="694">+ add(p : Product) : void</text>
+<text class="u-mem" x="626" y="710">+ getItems() : ArrayList&lt;Product&gt;</text>
+<text class="u-mem" x="626" y="726">+ clear() : void</text>
+<text class="u-mem" x="626" y="742">+ total() : double</text>
+</g>
+<path class="u-line u-dash" d="M270,60 L380,60"/>
+<polyline class="u-line" points="369.0,54.0 380,60 369.0,66.0"/>
+<text class="u-label" x="278" y="52" text-anchor="start">«uses»</text>
+<path class="u-line u-dash" d="M460,258 L460,328"/>
+<polyline class="u-line" points="466.0,317.0 460,328 454.0,317.0"/>
+<text class="u-label" x="468" y="297.0" text-anchor="start">«uses»</text>
+<path class="u-line u-dash" d="M380,234 L177.5,234 L177.5,328"/>
+<polyline class="u-line" points="183.5,317.0 177.5,328 171.5,317.0"/>
+<text class="u-label" x="185.5" y="260" text-anchor="start">«creates»</text>
+<path class="u-line" d="M410,518 L410,539.0 L170,539.0"/>
+<polygon class="u-head-hollow" points="410,518 404.0,527.0 410.0,536.0 416.0,527.0"/>
+<path class="u-line" d="M95.0,518 L95.0,438"/>
+<polygon class="u-head-solid" points="95.0,518 101.0,509.0 95.0,500.0 89.0,509.0"/>
+<path class="u-line" d="M473.0,518 L473.0,608"/>
+<circle class="u-head-hollow" cx="473.0" cy="526.0" r="8"/><line class="u-line" x1="465.0" y1="526.0" x2="481.0" y2="526.0"/><line class="u-line" x1="473.0" y1="518.0" x2="473.0" y2="534.0"/>
+<path class="u-line" d="M636,518 L636,563 L745.0,563 L745.0,608"/>
+<circle class="u-head-hollow" cx="636.0" cy="526.0" r="8"/><line class="u-line" x1="628.0" y1="526.0" x2="644.0" y2="526.0"/><line class="u-line" x1="636.0" y1="518.0" x2="636.0" y2="534.0"/>
+<path class="u-line" d="M745.0,750 L745.0,780 L95.0,780 L95.0,560"/>
+<polygon class="u-head-hollow" points="745.0,750 739.0,759.0 745.0,768.0 751.0,759.0"/>
+<text class="u-label" x="180" y="531.0">products 0..*</text>
+<text class="u-label" x="105.0" y="456">tracks 0..*</text>
+<text class="u-label" x="753.0" y="772">items 0..*</text>
 </svg></div>
-  <p class="caption">Figure 3. Store, its nested classes, Track and Main. <i>Product</i> is shown with its compartments hidden; Figure 2 has the full box.</p>
+  <p class="caption">Figure 3. Main, StoreApp, Store, its nested classes and Track. <i>Product</i> is shown with its compartments hidden; Figure 2 has the full box.</p>
 </section>
 
 <section>
@@ -635,14 +668,15 @@ pre.code {
     <tr><td><b>Product</b></td><td>abstract class</td><td>Shared name, price and stock with checked setters; counts every product; <code>sell()</code> throws when stock is too low.</td></tr>
     <tr><td><b>VinylRecord</b></td><td>class</td><td>Adds the artist. Has three constructors and two <code>restock()</code> methods. Can be played and discounted.</td></tr>
     <tr><td><b>LimitedEdition</b></td><td>class</td><td>A numbered vinyl with a certificate. Discounts are capped at 5%.</td></tr>
-    <tr><td><b>Cassette</b></td><td>class</td><td>A tape that plays on a cassette deck. Uses the default <code>stop()</code>.</td></tr>
+    <tr><td><b>Cassette</b></td><td>class</td><td>A tape with an artist and two overloaded constructors. Plays on a cassette deck and uses the default <code>stop()</code>.</td></tr>
     <tr><td><b>Playable</b></td><td>interface</td><td><code>play()</code> must be written; <code>stop()</code> is a default method.</td></tr>
     <tr><td><b>Discountable</b>, <b>Collectible</b></td><td>interfaces</td><td>Discount price; certificate for collectors' items.</td></tr>
     <tr><td><b>Store</b></td><td>Singleton class</td><td>The one shop. Holds <code>ArrayList&lt;Product&gt;</code> and searches it by name.</td></tr>
     <tr><td><b>Store.Receipt</b>, <b>Store.Cart</b></td><td>nested classes</td><td>Receipt needs no Store object. Cart is an inner class that uses the Store's name.</td></tr>
-    <tr><td><b>Track</b></td><td>class</td><td>One song. Used for the default constructor and the array of objects.</td></tr>
+    <tr><td><b>Track</b></td><td>class</td><td>One song with its length. Each product holds a <code>Track[]</code>. Also shows the default constructor.</td></tr>
     <tr><td><b>OutOfStockException</b>, <b>InvalidPriceException</b></td><td>exception classes</td><td>Checked and unchecked errors for selling and pricing.</td></tr>
-    <tr><td><b>Main</b></td><td>class</td><td>Menu plus <code>topic1()</code> to <code>topic8()</code>.</td></tr>
+    <tr><td><b>StoreApp</b></td><td>class</td><td>The terminal shop: list records, show tracks, play with a progress bar, cart and buying.</td></tr>
+    <tr><td><b>Main</b></td><td>class</td><td>Welcome menu, plus the OOP topic menu with <code>topic1()</code> to <code>topic8()</code>.</td></tr>
   </table></div>
 </section>
 
@@ -665,13 +699,14 @@ pre.code {
 <section>
   <h2><span class="n">4</span>Demo plan (5 minutes)</h2>
   <ol class="steps">
-    <li><span class="t">0:00</span><div><b>Compile.</b> Run <code>javac -d out src/*.java</code>, then <code>java -cp out Main</code> to show the menu.</div></li>
-    <li><span class="t">0:30</span><div><b>Topic 1.</b> The negative price is rejected and the old price stays. <code>c = a</code> changes both, because they are one object.</div></li>
-    <li><span class="t">1:15</span><div><b>Topic 2.</b> The printed constructor steps show <code>this(...)</code> chaining. Then the two <code>restock()</code> results and <code>show('A')</code> printing 65.</div></li>
-    <li><span class="t">2:00</span><div><b>Topic 4.</b> The constructor order Product → VinylRecord → LimitedEdition, then <code>super.play()</code>.</div></li>
-    <li><span class="t">2:45</span><div><b>Topic 5.</b> One <code>Product[]</code> loop with three different outputs; <code>p.category</code> gives "Product" but <code>p.getType()</code> gives "Vinyl".</div></li>
-    <li><span class="t">3:30</span><div><b>Topic 7.</b> The queue's <code>peek()</code> and <code>poll()</code>, and the ListIterator going backward.</div></li>
-    <li><span class="t">4:15</span><div><b>Topic 8.</b> <code>sell(10)</code> throws <code>OutOfStockException</code>; <code>finally</code> runs even after <code>return</code>.</div></li>
+    <li><span class="t">0:00</span><div><b>Shop.</b> Run <code>java -cp out Main</code>. On the welcome screen choose 1, pick Rumours, play "The Chain", add it to the cart, then try to buy 20 copies to show the out-of-stock error.</div></li>
+    <li><span class="t">1:00</span><div><b>Topic menu.</b> Back on the welcome screen choose 4 to open the OOP topics.</div></li>
+    <li><span class="t">1:15</span><div><b>Topic 1.</b> The negative price is rejected and the old price stays. <code>c = a</code> changes both, because they are one object.</div></li>
+    <li><span class="t">1:45</span><div><b>Topic 2.</b> The printed constructor steps show <code>this(...)</code> chaining. Then the two <code>restock()</code> results and <code>show('A')</code> printing 65.</div></li>
+    <li><span class="t">2:30</span><div><b>Topic 4.</b> The constructor order Product → VinylRecord → LimitedEdition, then <code>super.play()</code>.</div></li>
+    <li><span class="t">3:15</span><div><b>Topic 5.</b> One <code>Product[]</code> loop with three different outputs; <code>p.category</code> gives "Product" but <code>p.getType()</code> gives "Vinyl".</div></li>
+    <li><span class="t">3:50</span><div><b>Topic 7.</b> The queue's <code>peek()</code> and <code>poll()</code>, and the ListIterator going backward.</div></li>
+    <li><span class="t">4:25</span><div><b>Topic 8.</b> <code>sell(10)</code> throws <code>OutOfStockException</code>; <code>finally</code> runs even after <code>return</code>.</div></li>
   </ol>
   <pre class="code">$ java -cp out Main 8
 --- Exceptional flow: try -> catch -> finally ---
@@ -683,7 +718,7 @@ pre.code {
   <h2><span class="n">5</span>Limitations and future work</h2>
   <ul>
     <li>Data is created in code and is lost when the program ends. Saving to a file would keep it.</li>
-    <li>The menu runs demonstrations. A full shop menu (add item, sell item, show cart) could use the same classes.</li>
+    <li>Playback is simulated with a sped-up progress bar; real audio would need a sound library.</li>
     <li>More product types, such as CDs or gift cards, would only need a new class that extends <code>Product</code>.</li>
   </ul>
 </section>
